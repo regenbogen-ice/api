@@ -60,20 +60,20 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
             }
 
             if (include_routes) {
-                const routes_db = await database('train_trip_route').where({ train_trip_id: trip.id }).select(['index', 'cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
-                const routes = []
-                for (const route of routes_db) {
-                    routes.push({
-                        index: route.index,
-                        cancelled: route.cancelled,
-                        station: await stationNameByEva(route.station),
-                        scheduled_departure: route.scheduled_departure ? JSToISO(route.scheduled_departure) : null,
-                        departure: route.departure ? JSToISO(route.departure) : null,
-                        scheduled_arrival: route.scheduled_arrival ? JSToISO(route.scheduled_arrival) : null,
-                        arrival: route.arrival ? JSToISO(route.arrival) : null,
+                const stops_db = await database('train_trip_route').where({ train_trip_id: trip.id }).select(['index', 'cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
+                const stops = []
+                for (const stop of stops_db) {
+                    stops.push({
+                        index: stop.index,
+                        cancelled: stop.cancelled,
+                        station: await stationNameByEva(stop.station),
+                        scheduled_departure: stop.scheduled_departure ? JSToISO(stop.scheduled_departure) : null,
+                        departure: stop.departure ? JSToISO(stop.departure) : null,
+                        scheduled_arrival: stop.scheduled_arrival ? JSToISO(stop.scheduled_arrival) : null,
+                        arrival: stop.arrival ? JSToISO(stop.arrival) : null,
                     })
                 }
-                data['routes'] = routes
+                data['stops'] = stops
             }
             trips.push(data)
         }
