@@ -45,8 +45,8 @@ app.post('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
 
     if (trip_limit > 0) {
         const trips_db = await database('train_trip_vehicle').where({ train_vehicle_id: train_vehicle.id })
-        .join('train_trip', 'train_trip_vehicle.id', '=', 'train_trip.id')
-        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.timestamp', 'train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).limit(trip_limit)
+        .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
+        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.timestamp', 'train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).orderBy('train_trip.initial_departure', 'desc').limit(trip_limit)
         const trips = []
         for (const trip of trips_db) {
             const data: any = {
