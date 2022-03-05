@@ -11,10 +11,10 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
 
     const q = String(req.query.q)
     const coach_sequence_limit = parseInt((req.query.coach_sequence_limit || '0').toString())
-    const include_coaches = req.query.include_coaches === 'true' || true
+    const include_coaches = req.query.include_coaches !== 'false'
     const trip_limit = parseInt((req.query.trip_limit || '0').toString())
-    const include_routes = req.query.include_routes === 'true' || true
-    const include_marudor_link = req.query.include_marudor_link === 'true' || false
+    const include_routes = req.query.include_routes !== 'false'
+    const include_marudor_link = req.query.include_marudor_link === 'true'
     
     let train_vehicle = await database('train_vehicle').where({ train_vehicle_number: q }).select('*').first()
     if (!train_vehicle) {
