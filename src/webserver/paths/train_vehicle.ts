@@ -65,11 +65,10 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
                 data['marudor'] = `https://marudor.de/details/${data.train_type}%20${data.train_number}/${data.initial_departure}`
 
             if (include_routes) {
-                const stops_db = await database('train_trip_route').where({ train_trip_id: trip.id }).select(['index', 'cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
+                const stops_db = await database('train_trip_route').where({ train_trip_id: trip.id }).orderBy('index', 'asc').select(['cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
                 const stops = []
                 for (const stop of stops_db) {
                     stops.push({
-                        index: stop.index,
                         cancelled: stop.cancelled,
                         station: await stationNameByEva(stop.station),
                         scheduled_departure: stop.scheduled_departure ? JSToISO(stop.scheduled_departure) : null,
