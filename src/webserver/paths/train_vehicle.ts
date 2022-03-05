@@ -4,16 +4,16 @@ import { JSToISO } from '../../dateTimeFormats.js';
 import { stationNameByEva } from '../../evaFetch.js';
 import { app } from '../webserver.js';
 
-app.post('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
-    if (!Object.keys(req.body).includes('q')) {
+app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
+    if (!Object.keys(req.query).includes('q')) {
         res.status(400).send('Provide parameter q.')
     }
 
-    const q = req.body.q
-    const coach_sequence_limit = req.body.coach_sequence_limit || 0
-    const include_coaches = req.body.include_coaches === 'true' || true
-    const trip_limit = req.body.trip_limit || 0
-    const include_routes = req.body.include_routes === 'true' || true
+    const q = String(req.query.q)
+    const coach_sequence_limit = parseInt((req.query.coach_sequence_limit || '0').toString())
+    const include_coaches = req.query.include_coaches === 'true' || true
+    const trip_limit = parseInt((req.query.trip_limit || '0').toString())
+    const include_routes = req.query.include_routes === 'true' || true
     
     let train_vehicle = await database('train_vehicle').where({ train_vehicle_number: q }).select('*').first()
     if (!train_vehicle) {
