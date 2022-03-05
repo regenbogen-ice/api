@@ -11,9 +11,9 @@ app.post('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
 
     const q = req.body.q
     const coach_sequence_limit = req.body.coach_sequence_limit || 0
-    const include_coaches = req.body.include_coaches || true
+    const include_coaches = req.body.include_coaches === 'true' || true
     const trip_limit = req.body.trip_limit || 0
-    const include_routes = req.body.include_routes || true
+    const include_routes = req.body.include_routes === 'true' || true
     
     let train_vehicle = await database('train_vehicle').where({ train_vehicle_number: q }).select('*').first()
     if (!train_vehicle) {
