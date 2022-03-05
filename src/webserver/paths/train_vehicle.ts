@@ -14,6 +14,7 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
     const include_coaches = req.query.include_coaches === 'true' || true
     const trip_limit = parseInt((req.query.trip_limit || '0').toString())
     const include_routes = req.query.include_routes === 'true' || true
+    const include_marudor_link = req.query.include_marudor_link === 'true' || false
     
     let train_vehicle = await database('train_vehicle').where({ train_vehicle_number: q }).select('*').first()
     if (!train_vehicle) {
@@ -46,7 +47,7 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
     if (trip_limit > 0) {
         const trips_db = await database('train_trip_vehicle').where({ train_vehicle_id: train_vehicle.id })
         .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
-        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.timestamp', 'train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).orderBy('train_trip.initial_departure', 'desc').limit(trip_limit)
+        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).orderBy('train_trip.initial_departure', 'desc').limit(trip_limit)
         const trips = []
         for (const trip of trips_db) {
             const data: any = {
@@ -54,10 +55,14 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
                 vehicle_timestamp: JSToISO(trip.timestamp),
                 trip_timestamp: JSToISO(trip.train_trip_timestamp),
                 initial_departure: JSToISO(trip.initial_departure),
+                train_type: trip.train_type,
                 train_number: trip.train_number,
                 origin_station: trip.origin_station ? await stationNameByEva(trip.origin_station) : null,
                 destination_station: trip.destination_station ? await stationNameByEva(trip.destination_station) : null,
             }
+
+            if (include_marudor_link)
+                data['marudor'] = `https://marudor.de/details/${data.train_type}%20${data.train_number}/${data.initial_departure}`
 
             if (include_routes) {
                 const stops_db = await database('train_trip_route').where({ train_trip_id: trip.id }).select(['index', 'cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
@@ -74,6 +79,8 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
                     })
                 }
                 data['stops'] = stops
+                if (include_marudor_link && stops.length > 0)
+                    data['marudor'] += `?station=${stops_db[0].station}`
             }
             trips.push(data)
         }
