@@ -6,4 +6,4 @@ export const fromSQLTimestamp = (sqlTimestamp: string) => DateTime.fromFormat(sq
 export const toSQLTimestamp = (timestamp: DateTime) => timestamp.setZone('UTC').toFormat('yyyy-LL-dd hh:mm:ss')
 export const marudorToSQL = (marudorTimeStamp: string) => toSQLTimestamp(fromMarudorTimestamp(marudorTimeStamp))
 export const JSToISO = (jsDate: Date) => DateTime.fromJSDate(jsDate).setZone('UTC').toISO()
-export const toGermanDate = (date: DateTime) => date.toLocal().toFormat('dd.LL. hh:mm')
+export const toGermanDate = (date: DateTime) => date.toLocal().toFormat('dd.LL. HH:mm')
