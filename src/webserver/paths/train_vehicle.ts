@@ -1,7 +1,9 @@
 import expressAsyncHandler from 'express-async-handler';
+import { DateTime } from 'luxon';
 import database from '../../database.js';
 import { JSToISO } from '../../dateTimeFormats.js';
 import { stationNameByEva } from '../../evaFetch.js';
+import { rabbit } from '../../rabbit.js';
 import { app } from '../webserver.js';
 
 app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
@@ -47,9 +49,18 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
     if (trip_limit > 0) {
         const trips_db = await database('train_trip_vehicle').where({ train_vehicle_id: train_vehicle.id })
         .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
-        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).orderBy('train_trip.initial_departure', 'desc').limit(trip_limit)
+        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id', 'train_trip.routes_update_expire', 'train_trip.coach_sequence_update_expire']).orderBy('train_trip.initial_departure', 'desc').limit(trip_limit)
         const trips = []
         for (const trip of trips_db) {
+            if (trip.coach_sequence_update_expire && DateTime.fromJSDate(trip.initial_departure).plus({ days: 2 }) > DateTime.now() && DateTime.fromJSDate(trip.coach_sequence_update_expire) < DateTime.now()) {
+                rabbit.publish('fetch_coach_sequence', {
+                    trainId: trip.id,
+                    trainNumber: trip.train_number,
+                    trainType: trip.train_type,
+                    evaDeparture: JSToISO(trip.initial_departure),
+                    evaNumber: trip.origin_station
+                })
+            }
             const data: any = {
                 group_index: trip.group_index,
                 vehicle_timestamp: JSToISO(trip.timestamp),
@@ -80,6 +91,15 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
                 data['stops'] = stops
                 if (include_marudor_link && stops.length > 0)
                     data['marudor'] += `?station=${stops_db[0].station}`
+                if (trip.routes_update_expire && DateTime.fromJSDate(trip.initial_departure).plus({ days: 2 }) > DateTime.now() && DateTime.fromJSDate(trip.routes_update_expire) < DateTime.now()) {
+                    rabbit.publish('fetch_train_details', {
+                        trainId: trip.id,
+                        trainNumber: trip.train_number,
+                        trainType: trip.train_type,
+                        initialDeparture: JSToISO(trip.initial_departure),
+                        evaNumber: trip.origin_station
+                    })
+                }
             }
             trips.push(data)
         }
