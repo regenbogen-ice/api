@@ -16,7 +16,7 @@ export default {
       database: process.env.MYSQL_DATABASE || 'regenbogenice',
       user: process.env.MYSQL_USER || 'root',
       password: process.env.MYSQL_PASSWORD || 'root',
-      timezone: 'utc',
+      timezone: '+00:00',
     },
   },
 
@@ -28,7 +28,7 @@ export default {
       database: process.env.MYSQL_DATABASE || 'regenbogenice',
       user: process.env.MYSQL_USER || 'regenbogenice',
       password: process.env.MYSQL_PASSWORD,
-      timezone: 'utc',
+      timezone: '+00:00',
     },
   }
 
