@@ -88,8 +88,10 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
                         arrival: stop.arrival ? JSToISO(stop.arrival) : null,
                     })
                 }
+                if (stops.length === 0)
+                    continue
                 data['stops'] = stops
-                if (include_marudor_link && stops.length > 0)
+                if (include_marudor_link)
                     data['marudor'] += `?station=${stops_db[0].station}`
                 if (trip.routes_update_expire && DateTime.fromJSDate(trip.initial_departure).plus({ days: 2 }) > DateTime.now() && DateTime.fromJSDate(trip.routes_update_expire) < DateTime.now()) {
                     rabbit.publish('fetch_train_details', {
