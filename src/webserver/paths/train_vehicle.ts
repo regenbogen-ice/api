@@ -49,7 +49,7 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
     if (trip_limit > 0) {
         const trips_db = await database('train_trip_vehicle').where({ train_vehicle_id: train_vehicle.id })
         .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
-        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id', 'train_trip.routes_update_expire', 'train_trip.coach_sequence_update_expire']).orderBy('train_trip.initial_departure', 'desc').limit(trip_limit)
+        .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.origin', 'train_trip_vehicle.destination', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id', 'train_trip.routes_update_expire', 'train_trip.coach_sequence_update_expire']).orderBy('train_trip.initial_departure', 'desc').limit(trip_limit)
         const trips = []
         for (const trip of trips_db) {
             if (trip.coach_sequence_update_expire && DateTime.fromJSDate(trip.initial_departure).plus({ days: 2 }) > DateTime.now() && DateTime.fromJSDate(trip.coach_sequence_update_expire) < DateTime.now()) {
@@ -68,15 +68,27 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
                 initial_departure: JSToISO(trip.initial_departure),
                 train_type: trip.train_type,
                 train_number: trip.train_number,
-                origin_station: trip.origin_station ? await stationNameByEva(trip.origin_station) : null,
-                destination_station: trip.destination_station ? await stationNameByEva(trip.destination_station) : null,
+                origin_station: trip.origin ? await stationNameByEva(trip.origin) : trip.origin_station ? await stationNameByEva(trip.origin_station) : null,
+                destination_station: trip.destination ? await stationNameByEva(trip.destination) : trip.destination_station ? await stationNameByEva(trip.destination_station) : null,
             }
 
             if (include_marudor_link)
                 data['marudor'] = `https://marudor.de/details/${data.train_type}%20${data.train_number}/${data.initial_departure}`
 
             if (include_routes) {
-                const stops_db = await database('train_trip_route').where({ train_trip_id: trip.id }).orderBy('index', 'asc').select(['cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
+                let stops_db = await database('train_trip_route').where({ train_trip_id: trip.id }).orderBy('index', 'asc').select(['cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
+                if (stops_db.length === 0)
+                    continue 
+                if (trip.origin) {
+                    const origin_stations = stops_db.filter(e => e.station == trip.origin)
+                    if (origin_stations.length == 1)
+                        stops_db = stops_db.slice(stops_db.indexOf(origin_stations[0]))
+                }
+                if (trip.destination) {
+                    const destination_stations = stops_db.filter(e => e.station == trip.destination)
+                    if (destination_stations.length == 1)
+                        stops_db = stops_db.slice(0, stops_db.indexOf(destination_stations[0]) + 1)
+                }
                 const stops = []
                 for (const stop of stops_db) {
                     stops.push({
@@ -88,8 +100,6 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
                         arrival: stop.arrival ? JSToISO(stop.arrival) : null,
                     })
                 }
-                if (stops.length === 0)
-                    continue
                 data['stops'] = stops
                 if (include_marudor_link)
                     data['marudor'] += `?station=${stops_db[0].station}`
