@@ -2,7 +2,7 @@ import fetch, { Response } from 'node-fetch'
 import staticConfig from './staticConfig.js'
 import redis from './reddis.js'
 
-type StopPlaceResponse = { evaNumber: string, name: string }
+type StopPlaceResponse = { evaNumber: string, name: string, availableTransports: string[] }
 type StopPlaceSearchResponse = StopPlaceResponse[]
 
 const handleResponse = async (path: string, response: Response, ignoredStatusCodes?: number[]): Promise<any | null> => {
@@ -12,7 +12,7 @@ const handleResponse = async (path: string, response: Response, ignoredStatusCod
         return await response.json()
 }
 
-export const stationNameByEva = async (evaNumber: number) => {
+export const stationNameByEva = async (evaNumber: number): Promise<string> => {
     const path = staticConfig.MARUDOR_URL + `/stopPlace/v1/${evaNumber}`
     const redisResponse = await redis.get(`eva_${evaNumber}`)
     if (redisResponse)
@@ -22,12 +22,13 @@ export const stationNameByEva = async (evaNumber: number) => {
     return response.name
 }
 
-export const stationEvaByName = async (searchTerm: string) => {
-    const path = staticConfig.MARUDOR_URL + `/stopPlace/v1/search${searchTerm}`
-    const redisResponse = await redis.get(`eva_search_${searchTerm}`)
+export const stationEvaByName = async (searchTerm: string, length: number): Promise<{ evaNumber: number, name: string }[]> => {
+    const path = staticConfig.MARUDOR_URL + `/stopPlace/v1/search/${searchTerm}?max=${length * 2}`
+    const redisResponse = await redis.get(`eva_search_${searchTerm}_${length}`)
     if (redisResponse)
-        return +redisResponse
+        return JSON.parse(redisResponse)
     const response: StopPlaceSearchResponse = await handleResponse(path, await fetch(path))
-    redis.set(`eva_search_${searchTerm}`, response[0].evaNumber)
-    return response[0].evaNumber
+    const r = response.filter(r => r.availableTransports.includes("HIGH_SPEED_TRAIN")).map(r => ({ evaNumber: +r.evaNumber, name: r.name })).slice(0, length)
+    redis.set(`eva_search_${searchTerm}`, JSON.stringify(r))
+    return r
 }
