@@ -51,7 +51,7 @@ app.get('/rss/:stationName', expressAsyncHandler(async (req, res) => {
         .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
         .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.origin', 'train_trip_vehicle.destination', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).orderBy('train_trip.initial_departure', 'desc').limit(30)
     for (const trip of trips_db) {
-        const routes = await database('train_trip_route').where({ train_trip_id: trip.id }).select(['id', 'station', 'scheduled_arrival', 'cancelled'])
+        const routes = await database('train_trip_route').where({ train_trip_id: trip.id }).select(['id', 'station', 'scheduled_arrival', 'scheduled_departure', 'cancelled'])
         for (const route of routes) {
             if (!route.cancelled && route.station == eva.evaNumber) {
                 feed.item({
