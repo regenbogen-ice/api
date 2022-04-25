@@ -55,9 +55,9 @@ app.get('/rss/:stationName', expressAsyncHandler(async (req, res) => {
         for (const route of routes) {
             if (!route.cancelled && route.station == eva.evaNumber) {
                 feed.item({
-                    title: `RegenbogenICE als ${trip.train_type} ${trip.train_number} am ${toGermanDate(DateTime.fromJSDate(route.scheduled_arrival))}`,
-                    description: `Der RegenbogenICE ist als ${trip.train_type} ${trip.train_number} am ${toGermanDate(DateTime.fromJSDate(route.scheduled_arrival))} in ${eva.name}. Bitte prüfe die Informationen vor Ankunft erneut.`,
-                    guid: `${trip.id}-${route.id}-${trip.train_type}-${trip.train_number}-${304}-${JSToISO(trip.initial_departure)}-${JSToISO(route.scheduled_arrival)}`,
+                    title: `RegenbogenICE als ${trip.train_type} ${trip.train_number} am ${toGermanDate(DateTime.fromJSDate(route.scheduled_arrival || route.scheduled_departure))}`,
+                    description: `Der RegenbogenICE ist als ${trip.train_type} ${trip.train_number} am ${toGermanDate(DateTime.fromJSDate(route.scheduled_arrival || route.scheduled_departure))} in ${eva.name}. Bitte prüfe die Informationen vor Ankunft erneut.`,
+                    guid: `${trip.id}-${route.id}-${trip.train_type}-${trip.train_number}-${304}-${JSToISO(trip.initial_departure)}-${JSToISO(route.scheduled_arrival || route.scheduled_departure)}`,
                     url: 'https://regenbogen-ice.de',
                     date: trip.timestamp
                 })
