@@ -120,3 +120,13 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
 
     res.json(data_object)
 }))
+
+app.get('/api/train_vehicle/all', expressAsyncHandler(async (req, res) => {
+    let limit = parseInt(req.query.limit as string || '20')
+    if (limit > 200)
+        limit = 200
+    res.json((await database.raw(`SELECT COUNT(train_trip_vehicle.id) as count, train_vehicle.train_vehicle_name as vehicle_name FROM train_vehicle ` + 
+	    `JOIN train_trip_vehicle ON train_trip_vehicle.train_vehicle_id = train_vehicle.id ` +
+        `WHERE train_vehicle.train_vehicle_name IS NOT NULL ` +
+        `GROUP BY train_trip_vehicle.train_vehicle_id ORDER BY COUNT(train_trip_vehicle.id) DESC LIMIT ?`, [limit]))[0])
+    }))
