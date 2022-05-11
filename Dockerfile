@@ -1,3 +1,21 @@
+FROM node:16-alpine as base
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+
+FROM base as dependencies
+
+RUN yarn install --cache-folder ./ycache --immutable --immutable-cache --production=false
+RUN rm -rf ./yache
+
+FROM dependencies as build
+
+ENV NODE_ENV=production
+COPY src ./src
+COPY knexfile.js tsconfig.json ./
+RUN yarn run build
+
+
 FROM node:16-alpine
 WORKDIR /app
 
@@ -13,17 +31,10 @@ ENV MYSQL_PASSWORD=
 
 ENV HTTP_HOST=0.0.0.0
 ENV HTTP_PORT=80
+
+COPY --from=build /app/node_modules/ ./node_modules/
+COPY --from=build /app/dist/ ./dist/
+COPY --from=build /app/package.json ./
+
 EXPOSE 80
-
-COPY ./package.json .
-COPY ./yarn.lock .
-
-RUN yarn install --production=false
-
-COPY ./tsconfig.json .
-COPY ./src ./src
-COPY ./knexfile.js .
-
-RUN yarn run build
-
 CMD ["yarn", "node", "dist/src/index.js"]
