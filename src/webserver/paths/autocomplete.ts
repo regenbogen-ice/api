@@ -2,10 +2,12 @@ import expressAsyncHandler from 'express-async-handler';
 import database from '../../database.js';
 import { app } from '../webserver.js';
 
-const getSortedAutoCompleteList = (searchTerm: string, possibilities: string[]) => {
+type TrainVehicle = { guess: string, type: string }
+
+const getSortedAutoCompleteList = (searchTerm: string, possibilities: TrainVehicle[]) => {
     const lowerSearchTerm = searchTerm.toLowerCase()
     const values: any[][] = possibilities.map(guess => {
-        const lowerGuess = guess.toLowerCase()
+        const lowerGuess = guess.guess.toLowerCase()
         const limit = Math.max(lowerGuess.length, lowerSearchTerm.length)
         let score = 0, highscore = 0
         for(let i = 0; i < limit; i++) {
@@ -29,11 +31,16 @@ const getSortedAutoCompleteList = (searchTerm: string, possibilities: string[]) 
 
 app.get('/api/autocomplete/:searchTerm', expressAsyncHandler(async (req, res) => {
     const searchTerm = req.params.searchTerm
+    const version = parseInt(req.query.version as string || '1')
     let possibilities = []
     if (Number(searchTerm)) {
-        possibilities = (await database('train_vehicle').where('train_vehicle_number', 'like', `%${searchTerm}%`).select('train_vehicle_number')).map(v => String(v.train_vehicle_number))
+        possibilities = (await database('train_vehicle').where('train_vehicle_number', 'like', `%${searchTerm}%`).select(['train_vehicle_number', 'train_type'])).map(v => ({ guess: String(v.train_vehicle_number), type: v.train_type }))
     } else {
-        possibilities = getSortedAutoCompleteList(searchTerm, (await database('train_vehicle').whereRaw('LOWER(train_vehicle_name) like ?', [`%${searchTerm}%`]).select('train_vehicle_name').limit(100)).map(v => v.train_vehicle_name))
+        possibilities = getSortedAutoCompleteList(searchTerm, (await database('train_vehicle').whereRaw('LOWER(train_vehicle_name) like ?', [`%${searchTerm}%`]).select(['train_vehicle_name', 'train_type']).limit(100)).map(v => ({ guess: v.train_vehicle_name, type: v.train_type })))
     }
-    res.json(possibilities)
+    if (version == 1) {
+        res.json(possibilities.map(p => p.guess))
+    } else {
+        res.json(possibilities)
+    }
 }))

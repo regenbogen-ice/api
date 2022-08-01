@@ -12,19 +12,22 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
     }
 
     const q = String(req.query.q)
+    const train_type = (req.query.train_type as string || 'ICE').toUpperCase()
     const coach_sequence_limit = parseInt((req.query.coach_sequence_limit || '0').toString())
     const include_coaches = req.query.include_coaches !== 'false'
     const trip_limit = parseInt((req.query.trip_limit || '0').toString())
     const include_routes = req.query.include_routes !== 'false'
     const include_marudor_link = req.query.include_marudor_link === 'true'
     
-    let train_vehicle = await database('train_vehicle').where({ train_vehicle_number: q }).select('*').first()
+    let train_vehicle = await database('train_vehicle').where({ train_type, train_vehicle_number: q }).select('*').first()
     if (!train_vehicle) {
-        train_vehicle = await database('train_vehicle').whereRaw(`LOWER(train_vehicle_name) LIKE ?`, [q]).select('*').first()
+        train_vehicle = await database('train_vehicle').where({ train_type }).whereRaw(`LOWER(train_vehicle_name) LIKE ?`, [q]).select('*').first()
     }
 
-    if (!train_vehicle)
+    if (!train_vehicle) {
         res.status(404).json({ error: `Train vehicle doen't exists.` })
+        return
+    }
 
     const data_object: any = {
         number: train_vehicle.train_vehicle_number,

@@ -15,7 +15,7 @@ app.get('/rss', expressAsyncHandler(async (req, res) => {
         image_url: 'https://regenbogen-ice.de/images/twittercard.png',
     })
 
-    const train_vehicle = await database('train_vehicle').where({ train_vehicle_number: 304 }).first()
+    const train_vehicle = await database('train_vehicle').where({ train_type: 'ICE', train_vehicle_number: 304 }).first()
     const trips_db = await database('train_trip_vehicle').where({ train_vehicle_id: train_vehicle.id })
         .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
         .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.origin', 'train_trip_vehicle.destination', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).orderBy('train_trip.initial_departure', 'desc').limit(30)
@@ -46,7 +46,7 @@ app.get('/rss/:stationName', expressAsyncHandler(async (req, res) => {
         site_url: 'https://regenbogen-ice.de',
         image_url: 'https://regenbogen-ice.de/images/twittercard.png',
     })
-    const train_vehicle = await database('train_vehicle').where({ train_vehicle_number: 304 }).first()
+    const train_vehicle = await database('train_vehicle').where({ train_type: 'ICE', train_vehicle_number: 304 }).first()
     const trips_db = await database('train_trip_vehicle').where({ train_vehicle_id: train_vehicle.id })
         .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
         .select(['train_trip_vehicle.group_index', 'train_trip_vehicle.origin', 'train_trip_vehicle.destination', 'train_trip_vehicle.timestamp', 'train_trip.train_type','train_trip.train_number', 'train_trip.origin_station', 'train_trip.destination_station', 'train_trip.initial_departure', 'train_trip.timestamp as train_trip_timestamp', 'train_trip.id']).orderBy('train_trip.initial_departure', 'desc').limit(30)
