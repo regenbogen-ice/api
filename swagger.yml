@@ -20,7 +20,7 @@ tags:
 paths:
   /autocomplete/v1/{q}:
     get:
-      operationId: "Autocomplete v2"
+      operationId: "Autocomplete v1"
       tags: ["Autocomplete"]
       parameters:
         - name: "q"
