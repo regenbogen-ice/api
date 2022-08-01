@@ -25,7 +25,7 @@ app.get('/api/train_vehicle', expressAsyncHandler(async (req, res) => {
     }
 
     if (!train_vehicle) {
-        res.status(404).json({ error: `Train vehicle doen't exists.` })
+        res.status(404).json({ error: `Train vehicle doesn't exist.` })
         return
     }
 
