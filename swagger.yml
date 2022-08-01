@@ -1,0 +1,245 @@
+openapi: 3.0.0
+info:
+  description: "Tracke den Regenbogen-ICE auf seinem Weg durch ganz Deutschland"
+  title: "RegenbogenICE"
+  version: 1.0.0
+  contact:
+    email: contact@regenbogen-ice.de
+  license:
+    name: GNU Affero General Public License
+    url: https://www.gnu.org/licenses/agpl-3.0.de.html
+servers:
+  - url: https://regenbogen-ice.de/api
+
+tags:
+  - name: "Autocomplete"
+    description: "Autocomplete for train vehicles."
+  - name: "Train vehicle"
+    description: "Get information about a train vehicle."
+
+paths:
+  /autocomplete/v1/{q}:
+    get:
+      operationId: "Autocomplete v2"
+      tags: ["Autocomplete"]
+      parameters:
+        - name: "q"
+          in: "path"
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Returns list of suggestions sorted by best guess."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutocompleteV1"
+  /autocomplete/v2/{q}:
+    get:
+      operationId: "Autocomplete v2"
+      tags: ["Autocomplete"]
+      parameters:
+        - name: "q"
+          in: "path"
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Returns list of suggestions sorted by best guess."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutocompleteV2"
+  /train_vehicle/v1:
+    get:
+      operationId: "Train vehicle v1"
+      tags: ["Train vehicle"]
+      parameters:
+        - name: "q"
+          in: "query"
+          required: true
+          schema:
+            type: string
+        - name: "train_type"
+          in: "query"
+          required: false
+          schema:
+            type: string
+            default: "ICE"
+        - name: "coach_sequence_limit"
+          in: "query"
+          required: false
+          description: "If you set coach_sequence_limit to 0 the attribute will be disabled. Set this limit to 1 if you only want to get current coach_sequence."
+          schema:
+            type: integer
+            default: 0
+        - name: "include_coaches"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: "trip_limit"
+          in: "query"
+          required: false
+          description: "If you set trip_limit to 0 the attribute will be disabled."
+          schema:
+            type: integer
+            default: 0
+        - name: "include_routes"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: "include_marudor_link"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          description: "Returns information about train vehicle."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainVehicle"
+        404:
+          description: "Train vehicle doesn't exist."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error text"
+                    example: "Train vehicle doesn't exist."
+
+components:
+  schemas:
+    AutocompleteV1:
+      type: "array"
+      items:
+        type: string
+    AutocompleteV2:
+      type: "array"
+      items:
+        type: "object"
+        properties: 
+          guess:
+            type: "string"
+          type:
+            type: "string"
+            description: "The train type. (e.g. ICE or IC)"
+    TrainTripStop:
+      type: object
+      properties:
+        cancelled:
+          type: integer
+          description: "1 or 0 as boolean"
+        station:
+          type: string
+          example: "Düsseldorf Hbf"
+        scheduled_departure:
+          type: string
+          format: date-time
+          nullable: true
+        departure:
+          type: string
+          format: date-time
+          nullable: true
+        scheduled_arrival:
+          type: string
+          format: date-time
+          nullable: true
+        arrival:
+          type: string
+          format: date-time
+          nullable: true
+    TrainTrip:
+      type: object
+      properties:
+        group_index:
+          type: integer
+          deprecated: true
+        train_number:
+          type: string
+        train_type:
+          type: string
+        origin_station:
+          type: string
+          nullable: true
+        destination_station:
+          type: string
+          nullable: true
+        initial_departure:
+          type: string
+          format: date-time
+        trip_timestamp:
+          type: string
+          format: date-time
+        vehicle_timestamp:
+          type: string
+          format: date-time
+        marudor:
+          type: string
+          description: Marudor link to train trip. Enable by setting include_marudor_link to true.
+        stops:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrainTripStop"
+          description: "Enable this attribute by setting include_routes to true."
+    TrainCoach:
+      type: "object"
+      properties:
+        index:
+          type: integer
+        class:
+          type: integer
+        type:
+          type: string
+          example: "Bpmbz"
+        uic:
+          type: string
+        category:
+          type: string
+          example: "REISEZUGWAGENZWEITEKLASSE"
+
+    TrainCoachSequence:
+      type: "object"
+      properties:
+        timestamp:
+          type: string
+          format: date-format
+        coaches:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrainCoach"
+          description: Enable coaches by setting include_coaches to true.
+    TrainVehicle:
+      type: "object"
+      properties:
+        building_series:
+          type: integer
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        number:
+          type: integer
+        train_type:
+          type: string
+        trips:
+          type: array
+          description: Set trip_limit to limit trips.
+          items:
+            $ref: "#/components/schemas/TrainTrip"
+        coach_sequences:
+          type: array
+          description: Set coach_sequence_limit to limit coach_sequences.
+          items:
+            $ref: "#/components/schemas/TrainCoachSequence"
