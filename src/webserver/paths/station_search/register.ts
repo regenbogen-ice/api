@@ -7,7 +7,7 @@ register('GET', '/stationSearch/:q', {
     query: { length: { type: 'number', default: '5' } }
 }, v1)
 
-register('GET', '/v1/station_searcg/:q', {
+register('GET', '/v1/station_search/:q', {
     params: { q: { type: 'string', required: true } },
     query: { length: { type: 'number', default: '5' } }
 }, v1)
