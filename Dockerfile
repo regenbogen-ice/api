@@ -12,6 +12,7 @@ FROM dependencies as build
 
 ENV NODE_ENV=production
 COPY src ./src
+COPY @types ./@types
 COPY knexfile.js tsconfig.json ./
 RUN yarn run build
 
