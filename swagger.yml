@@ -16,6 +16,8 @@ tags:
     description: "Autocomplete for train vehicles."
   - name: "Train vehicle"
     description: "Get information about a train vehicle."
+  - name: "Station search"
+    description: "Search/autocomplete api for station search."
 
 paths:
   /v1/autocomplete/{q}:
@@ -203,7 +205,53 @@ paths:
                     type: string
                     description: "Error text"
                     example: "Train vehicle doesn't exist."
-
+  /v1/station_search/{q}:
+    get:
+      operationId: "Station search v1"
+      tags: ["Station search"]
+      parameters:
+        - name: "q"
+          in: "path"
+          required: true
+          schema:
+            type: string
+        - name: "length"
+          in: "query"
+          required: false
+          schema:
+            type: number
+            default: 5
+      responses:
+        200:
+          description: "Returns list of long distance trains stations."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationSearch"
+  /stationSearch/{q}:
+    get:
+      deprecated: true
+      operationId: "Station search v1 (old path)"
+      tags: ["Station search"]
+      parameters:
+        - name: "q"
+          in: "path"
+          required: true
+          schema:
+            type: string
+        - name: "length"
+          in: "query"
+          required: false
+          schema:
+            type: number
+            default: 5
+      responses:
+        200:
+          description: "Returns list of long distance trains stations."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationSearch"
 components:
   schemas:
     AutocompleteV1:
@@ -328,3 +376,12 @@ components:
           description: Set coach_sequence_limit to limit coach_sequences.
           items:
             $ref: "#/components/schemas/TrainCoachSequence"
+    StationSearch:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          evaNumber:
+            type: number
+          name:
+            type: string
