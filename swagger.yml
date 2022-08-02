@@ -152,7 +152,7 @@ paths:
             type: integer
         - name: "train_type"
           in: "query"
-          required: false,
+          required: false
           schema:
             type: string
             default: "ICE"
