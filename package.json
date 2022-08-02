@@ -33,5 +33,6 @@
   "scripts": {
     "build": "tsc",
     "start": "tsc && node dist/src/index.js"
-  }
+  },
+  "types": "./@types/index.d.ts"
 }

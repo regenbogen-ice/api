@@ -5,6 +5,7 @@ import { stationNameByEva } from "../../../evaFetch.js"
 import { rabbit } from "../../../rabbit.js"
 import { ParserArguments } from "../../helpers/parser.js"
 import { RegenbogenICEError } from "../../../errors.js"
+import { TrainVehicle } from '../../../../@types/index.js'
 
 type V1Request = {
     q: string,
@@ -16,44 +17,7 @@ type V1Request = {
     include_marudor_link: boolean
 }
 
-type V1Response = {
-    name: string | null,
-    building_series: string | null,
-    number: number,
-    train_type: string,
-    trips?: Array<{
-        group_index: number,
-        train_number: number,
-        train_type: string,
-        origin_station: string | null,
-        destination_station: string | null,
-        initial_departure: string, // date-time
-        trip_timestamp: string, // date-time
-        vehicle_timestamp: string, // date-time
-        marudor?: string
-        stops?: Array<{
-            cancelled: boolean,
-            station: string,
-            scheduled_departure: string | null, // date-time
-            departure: string | null, // date-time
-            scheduled_arrival: string | null, // date-time
-            arrival: string | null, // date-time
-        }>
-    }>,
-    coach_sequences?: Array<{
-        timestamp: string, // date-time
-        coaches?: Array<{
-            index: number,
-            class: number,
-            type: string,
-            uic: string,
-            category: string
-        }>
-    }>
-}
-
-
-const v1 = async (request: V1Request): Promise<V1Response> => {
+const v1 = async (request: V1Request): Promise<TrainVehicle> => {
     
     let train_vehicle = await database('train_vehicle').where({ train_type: request.train_type, train_vehicle_number: request.q }).select('*').first()
     if (!train_vehicle) {
