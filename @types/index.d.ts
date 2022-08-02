@@ -16,8 +16,9 @@ export type TrainTrip = {
     initial_departure: string, // date-time
     trip_timestamp: string, // date-time
     vehicle_timestamp: string, // date-time
-    marudor?: string
+    marudor?: string,
     stops?: Array<TrainStop>
+    train_vehicle?: TrainVehicle
 }
 
 export type TrainCoach = {
@@ -35,7 +36,7 @@ export type TrainCoachSequence = {
 
 export type TrainVehicle = {
     name: string | null,
-    building_series: string | null,
+    building_series: number | null,
     number: number,
     train_type: string,
     trips?: Array<TrainTrip>,

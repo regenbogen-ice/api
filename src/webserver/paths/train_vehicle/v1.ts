@@ -6,6 +6,7 @@ import { rabbit } from "../../../rabbit.js"
 import { ParserArguments } from "../../helpers/parser.js"
 import { RegenbogenICEError } from "../../../errors.js"
 import { TrainVehicle } from '../../../../@types/index.js'
+import get_routes from '../../../logics/get_routes.js'
 
 type V1Request = {
     q: string,
@@ -17,7 +18,7 @@ type V1Request = {
     include_marudor_link: boolean
 }
 
-const v1 = async (request: V1Request): Promise<TrainVehicle> => {
+export const v1 = async (request: V1Request): Promise<TrainVehicle> => {
     
     let train_vehicle = await database('train_vehicle').where({ train_type: request.train_type, train_vehicle_number: request.q }).select('*').first()
     if (!train_vehicle) {
@@ -80,42 +81,10 @@ const v1 = async (request: V1Request): Promise<TrainVehicle> => {
                 data['marudor'] = `https://marudor.de/details/${data.train_type}%20${data.train_number}/${data.initial_departure}`
 
             if (request.include_routes) {
-                let stops_db = await database('train_trip_route').where({ train_trip_id: trip.id }).orderBy('index', 'asc').select(['cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
-                if (stops_db.length === 0)
-                    continue 
-                if (trip.origin) {
-                    const origin_stations = stops_db.filter(e => e.station == trip.origin)
-                    if (origin_stations.length == 1)
-                        stops_db = stops_db.slice(stops_db.indexOf(origin_stations[0]))
-                }
-                if (trip.destination) {
-                    const destination_stations = stops_db.filter(e => e.station == trip.destination)
-                    if (destination_stations.length == 1)
-                        stops_db = stops_db.slice(0, stops_db.indexOf(destination_stations[0]) + 1)
-                }
-                const stops = []
-                for (const stop of stops_db) {
-                    stops.push({
-                        cancelled: stop.cancelled,
-                        station: await stationNameByEva(stop.station),
-                        scheduled_departure: stop.scheduled_departure ? JSToISO(stop.scheduled_departure) : null,
-                        departure: stop.departure ? JSToISO(stop.departure) : null,
-                        scheduled_arrival: stop.scheduled_arrival ? JSToISO(stop.scheduled_arrival) : null,
-                        arrival: stop.arrival ? JSToISO(stop.arrival) : null,
-                    })
-                }
+                const { stops, firstStation } = await get_routes(trip)
                 data['stops'] = stops
-                if (request.include_marudor_link)
-                    data['marudor'] += `?station=${stops_db[0].station}`
-                if (trip.routes_update_expire && DateTime.fromJSDate(trip.initial_departure).plus({ days: 2 }) > DateTime.now() && DateTime.fromJSDate(trip.routes_update_expire) < DateTime.now()) {
-                    rabbit.publish('fetch_train_details', {
-                        trainId: trip.id,
-                        trainNumber: trip.train_number,
-                        trainType: trip.train_type,
-                        initialDeparture: JSToISO(trip.initial_departure),
-                        evaNumber: trip.origin_station
-                    })
-                }
+                if (request.include_marudor_link && firstStation)
+                    data['marudor'] += `?station=${firstStation}`
             }
             trips.push(data)
         }
