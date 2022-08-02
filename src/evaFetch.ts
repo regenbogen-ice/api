@@ -1,6 +1,6 @@
 import fetch, { Response } from 'node-fetch'
 import staticConfig from './staticConfig.js'
-import redis from './reddis.js'
+import redis from './redis.js'
 
 type StopPlaceResponse = { evaNumber: string, name: string, availableTransports: string[] }
 type StopPlaceSearchResponse = StopPlaceResponse[]

@@ -1,5 +1,5 @@
-import './webserver/webserver.js'
-import './webserver/paths/train_vehicle.js'
-import './webserver/paths/autocomplete.js'
-import './webserver/paths/rss.js'
-import './webserver/paths/stationSearch.js'
+import { start } from './webserver/webserver.js'
+import './webserver/paths/autocomplete/register.js'
+import './webserver/paths/train_vehicle/register.js'
+
+start()

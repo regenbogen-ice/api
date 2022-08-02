@@ -18,7 +18,7 @@ tags:
     description: "Get information about a train vehicle."
 
 paths:
-  /autocomplete/v1/{q}:
+  /v1/autocomplete/{q}:
     get:
       operationId: "Autocomplete v1"
       tags: ["Autocomplete"]
@@ -35,7 +35,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AutocompleteV1"
-  /autocomplete/v2/{q}:
+  /v2/autocomplete/{q}:
     get:
       operationId: "Autocomplete v2"
       tags: ["Autocomplete"]
@@ -52,9 +52,94 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AutocompleteV2"
-  /train_vehicle/v1:
+  /autocomplete/{q}:
+    get:
+      deprecated: true
+      operationId: "Autocomplete v1 (old path)"
+      tags: ["Autocomplete"]
+      parameters:
+        - name: "q"
+          in: "path"
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Returns list of suggestions sorted by best guess."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutocompleteV1"
+  /v1/train_vehicle:
     get:
       operationId: "Train vehicle v1"
+      tags: ["Train vehicle"]
+      parameters:
+        - name: "q"
+          in: "query"
+          required: true
+          schema:
+            type: string
+        - name: "train_type"
+          in: "query"
+          required: false
+          schema:
+            type: string
+            default: "ICE"
+        - name: "coach_sequence_limit"
+          in: "query"
+          required: false
+          description: "If you set coach_sequence_limit to 0 the attribute will be disabled. Set this limit to 1 if you only want to get current coach_sequence."
+          schema:
+            type: integer
+            default: 0
+        - name: "include_coaches"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: "trip_limit"
+          in: "query"
+          required: false
+          description: "If you set trip_limit to 0 the attribute will be disabled."
+          schema:
+            type: integer
+            default: 0
+        - name: "include_routes"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: "include_marudor_link"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          description: "Returns information about train vehicle."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrainVehicle"
+        404:
+          description: "Train vehicle doesn't exist."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error text"
+                    example: "Train vehicle doesn't exist."
+  /train_vehicle:
+    get:
+      deprecated: true
+      operationId: "Train vehicle v1 (old path)"
       tags: ["Train vehicle"]
       parameters:
         - name: "q"
