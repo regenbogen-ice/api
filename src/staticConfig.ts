@@ -1,3 +1,4 @@
 export default {
-    MARUDOR_URL: 'https://marudor.de/api'
+    MARUDOR_URL: 'https://marudor.de/api',
+    API_PATH: '/api'
 }
