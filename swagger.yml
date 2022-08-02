@@ -198,6 +198,7 @@ paths:
           content:
             application/json:
               schema:
+                description: Ordered by initial_departure (descending).
                 type: array
                 items:
                   $ref: "#/components/schemas/TrainTrip"
@@ -446,7 +447,7 @@ components:
           type: string
         trips:
           type: array
-          description: Set trip_limit to limit trips.
+          description: Set trip_limit to limit trips. Ordered by initial_departure (descending).
           items:
             $ref: "#/components/schemas/TrainTrip"
         coach_sequences:
