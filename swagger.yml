@@ -49,6 +49,13 @@ paths:
           required: true
           schema:
             type: string
+        - name: "types"
+          in: "query"
+          required: false
+          schema:
+            type: string
+            description: "List (seperated by ',') of search types. (train_vehicle, train_trip and coach)."
+            default: "train_vehicle,train_trip,coach"
       responses:
         200:
           description: "Returns list of suggestions sorted by best guess."
@@ -340,9 +347,14 @@ components:
         properties: 
           guess:
             type: "string"
-          type:
+          train_type:
             type: "string"
             description: "The train type. (e.g. ICE or IC)"
+            example: "ICE"
+          type:
+            type: "string"
+            description: "The type of object. (train_vehicle, train_trip or coach)"
+            example: "train_vehicle"
     TrainTripStop:
       type: object
       properties:

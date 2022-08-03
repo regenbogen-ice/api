@@ -46,7 +46,7 @@ export type TrainVehicle = {
 export type StationSearchResponse = Array<{ evaNumber: number, name: string }>
 
 export type AutoCompleteResponse = Array<AutoCompleteSuggestion>
-export type AutoCompleteSuggestion = { guess: string, type: string }
+export type AutoCompleteSuggestion = { guess: string, type: string, train_type: string }
 
 // deprecated autocomplete
 
