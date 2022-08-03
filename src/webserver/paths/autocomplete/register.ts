@@ -7,6 +7,6 @@ register('GET', '/autocomplete/:q', { params: { q: {type: 'string', required: tr
 
 register('GET', '/v1/autocomplete/:q', { params: { q: {type: 'string', required: true }} }, v1)
 register('GET', '/v2/autocomplete/:q', { params: {
-    q: { type: 'string', required: true },
-    types: { type: 'list', default: 'train_vehicle,train_type,coach'}
-}}, v2)
+    q: { type: 'string', required: true } },
+    query: { types: { type: 'list', default: 'train_vehicle,train_type,coach'} }
+}, v2)
