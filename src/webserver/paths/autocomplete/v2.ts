@@ -38,10 +38,14 @@ const v2 = async ({ q, types }: V2Request): Promise<AutoCompleteResponse> => {
 
     if (types.includes('train_trip') && splitted_q.length == 2 && splitted_q[0].length > 1) {
         // the first two letters are not a number -> IC or ICE e.g. : so get train_trip
-        const train_type = splitted_q[0]
+        const train_type = splitted_q[0].toUpperCase()
         const train_number = parseInt(splitted_q[1])
-        const trains = await database('train_trip').where({ train_type }).where('train_number', 'like',`%${train_number}%`).select(['train_type', 'train_number']).limit(100)
-        possibilities = trains.map(train => ({ guess: train.train_number, train_type: train.train_type, type: 'train_trip' }))
+        const trains = await database('train_trip')
+            .where({ train_type })
+            .where('train_number', 'like',`%${train_number}%`)
+            .groupBy('train_number')
+            .select(['train_number']).limit(100)
+        possibilities = trains.map(train => ({ guess: train.train_number, train_type: train_type, type: 'train_trip' }))
     } else {
         if (Number(q)) {
             if (types.includes('train_vehicle')) {
