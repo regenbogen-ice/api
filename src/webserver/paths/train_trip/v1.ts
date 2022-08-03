@@ -72,6 +72,8 @@ const v1 = async (request: V1Request): Promise<Array<TrainTrip>> => {
 
         if (request.include_routes) {
             const { stops, firstStation } = await get_routes(trip)
+            if (stops.length == 0)
+                continue
             data_object['stops'] = stops
             if (request.include_marudor_link && firstStation)
                     data_object['marudor'] += `?station=${firstStation}`

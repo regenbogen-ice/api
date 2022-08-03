@@ -82,6 +82,8 @@ export const v1 = async (request: V1Request): Promise<TrainVehicle> => {
 
             if (request.include_routes) {
                 const { stops, firstStation } = await get_routes(trip)
+                if (stops.length == 0)
+                    continue
                 data['stops'] = stops
                 if (request.include_marudor_link && firstStation)
                     data['marudor'] += `?station=${firstStation}`
