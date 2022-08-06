@@ -1,3 +1,4 @@
+import './rabbit.js'
 import { start } from './webserver/webserver.js'
 import './webserver/paths/rss.js'
 import './webserver/paths/autocomplete/register.js'
