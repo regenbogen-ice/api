@@ -3,9 +3,9 @@ scalar DateTime
 scalar List
 
 type Autocomplete {
-    guess: String
-    type: String
-    train_type: String
+    guess: String!
+    type: String!
+    train_type: String!
 }
 
 type TrainStop {
