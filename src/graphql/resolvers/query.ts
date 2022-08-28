@@ -1,5 +1,6 @@
 import database from '../../database.js'
 import trip_rabbit_updates from '../../logics/trip_rabbit_update.js'
+import staticConfig from '../../staticConfig.js'
 import autocompletev2 from '../../webserver/paths/autocomplete/v2.js'
 
 export const trainVehicleQuery = async (parent: any, args: { q: string, train_type?: string }) => {
@@ -13,7 +14,7 @@ export const trainVehicleQuery = async (parent: any, args: { q: string, train_ty
 
 export const trainTripQuery = async (parent: any, args: { train_number: number, train_type?: string, limit: number}) => {
     const train_type = args.train_type || 'ICE'
-    const limit = args.limit ? args.limit < 100 ? args.limit : 5 : 5 // default value: 5, limit < 100
+    const limit = args.limit ? args.limit < staticConfig.RETURN_LIMIT.train_trips.max ? args.limit : staticConfig.RETURN_LIMIT.train_trips.default : staticConfig.RETURN_LIMIT.train_trips.default // default value: 5, limit < 100
     const trips = await database('train_trip').where({ train_type, train_number: args.train_number })
         .select('*').limit(limit)
     await trip_rabbit_updates(trips)
