@@ -36,6 +36,7 @@ ENV HTTP_PORT=80
 COPY --from=build /app/node_modules/ ./node_modules/
 COPY --from=build /app/dist/ ./dist/
 COPY --from=build /app/package.json ./
+COPY ./schema.graphql ./
 
 EXPOSE 80
 CMD ["yarn", "node", "dist/src/index.js"]
