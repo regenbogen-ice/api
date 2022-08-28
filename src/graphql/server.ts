@@ -1,4 +1,7 @@
 import { ApolloServer } from 'apollo-server-express'
+import {
+    ApolloServerPluginLandingPageGraphQLPlayground
+  } from "apollo-server-core";
 import { randomBytes } from 'crypto'
 import { readFileSync } from 'fs'
 import resolvers from './resolvers/resolvers.js'
@@ -23,6 +26,7 @@ export const apolloServer = new ApolloServer({
     },
     plugins: [
         responseCachePlugin(),
+        ApolloServerPluginLandingPageGraphQLPlayground()
     ]
 })
 
