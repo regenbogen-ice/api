@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  description: "DEPRECATED: Tracke den Regenbogen-ICE auf seinem Weg durch ganz Deutschland\n\nDEPRECATED!\nDiese Api wird nicht mehr weiter supported, bitten nutze die neue GraphQL Api unter dem Path /graphql."
+  description: "DEPRECATED: Tracke den Regenbogen-ICE auf seinem Weg durch ganz Deutschland\n\nDEPRECATED!\nDiese Api wird nicht mehr weiter supported, bitten nutze die neue GraphQL Api unter dem Path https://regenbogen-ice.de/graphql."
   title: "RegenbogenICE (DEPRECATED)"
   version: 1.0.0
   contact:
