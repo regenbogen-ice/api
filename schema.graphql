@@ -1,0 +1,60 @@
+scalar EvaNumber
+scalar DateTime
+scalar List
+
+type Autocomplete {
+    guess: String
+    type: String
+}
+
+type TrainStop {
+    cancelled: Boolean!
+    station: EvaNumber!
+    scheduled_departure: DateTime
+    departure: DateTime
+    scheduled_arrival: DateTime
+    arrival: DateTime
+}
+
+type TrainTrip {
+    train_number: String!
+    train_type: String!
+    origin_station: EvaNumber
+    destination_station: EvaNumber
+    initial_departure: DateTime!
+    bahn_expert: String
+    stops: [TrainStop]
+    train_vehicles: [TrainVehicle]
+}
+
+type CoachSequence {
+    timestamp: DateTime!
+    coaches: [Coach]!
+    train_vehicle: TrainVehicle!
+}
+
+type Coach {
+    index: Int!
+    class: Int!
+    type: String!
+    uic: String!
+    category: String!
+    coach_sequence: CoachSequence!
+}
+
+type TrainVehicle {
+    building_series: String
+    train_vehicle_name: String
+    train_vehicle_number: Int!
+    train_type: String!
+    timestamp: DateTime!
+    trips(limit: Int): [TrainTrip]
+    coach_sequences(limit: Int): [CoachSequence]
+}
+
+type Query {
+    train_vehicle(q: String!, train_type: String): TrainVehicle
+    train_trip(train_number: Int!, train_type: String, limit: Int): [TrainTrip]
+    coach(uic: String!): Coach
+    autocomplete(q: String!, types: List): [Autocomplete]
+}

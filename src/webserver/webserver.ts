@@ -4,6 +4,7 @@ import cors from 'cors'
 import { RegenbogenICEError } from '../errors.js'
 import { randomBytes } from 'crypto'
 import Sentry from '@sentry/node'
+import { apolloServer } from '../graphql/server.js'
 
 
 export const app = express()
@@ -14,6 +15,7 @@ if (process.env.SENTRY_DSN) {
     app.use(Sentry.Handlers.requestHandler())
 }
 
+apolloServer.applyMiddleware({ app })
 app.use(express.json())
 app.use(cors())
 

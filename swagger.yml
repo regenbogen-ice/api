@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  description: "Tracke den Regenbogen-ICE auf seinem Weg durch ganz Deutschland"
-  title: "RegenbogenICE"
+  description: "DEPRECATED: Tracke den Regenbogen-ICE auf seinem Weg durch ganz Deutschland\n\nDEPRECATED!\nDiese Api wird nicht mehr weiter supported, bitten nutze die neue GraphQL Api unter dem Path /graphql."
+  title: "RegenbogenICE (DEPRECATED)"
   version: 1.0.0
   contact:
     email: contact@regenbogen-ice.de
@@ -26,6 +26,7 @@ paths:
     get:
       operationId: "Autocomplete v1"
       tags: ["Autocomplete"]
+      deprecated: true
       parameters:
         - name: "q"
           in: "path"
@@ -43,6 +44,7 @@ paths:
     get:
       operationId: "Autocomplete v2"
       tags: ["Autocomplete"]
+      deprecated: true
       parameters:
         - name: "q"
           in: "path"
@@ -84,6 +86,7 @@ paths:
   /v1/train_vehicle:
     get:
       operationId: "Train vehicle v1"
+      deprecated: true
       tags: ["Train vehicle"]
       parameters:
         - name: "q"
@@ -151,6 +154,7 @@ paths:
     get:
       operationId: "Train trip v1"
       tags: ["Train trip"]
+      deprecated: true
       parameters:
         - name: "train_number"
           in: "query"
@@ -289,6 +293,7 @@ paths:
                     example: "Train vehicle doesn't exist."
   /v1/station_search/{q}:
     get:
+      deprecated: true
       operationId: "Station search v1"
       tags: ["Station search"]
       parameters:
