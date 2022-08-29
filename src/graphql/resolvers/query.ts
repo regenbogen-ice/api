@@ -12,12 +12,15 @@ export const trainVehicleQuery = async (parent: any, args: { q: string, train_ty
     return train_vehicle
 }
 
-export const trainTripQuery = async (parent: any, args: { train_number: number, train_type?: string, limit: number}) => {
+export const trainTripQuery = async (parent: any, args: { train_number: number, train_type?: string, limit?: number, initial_departure?: string }) => {
     const train_type = args.train_type || 'ICE'
     const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.train_trips.max ? args.limit : staticConfig.RETURN_LIMIT.train_trips.default : staticConfig.RETURN_LIMIT.train_trips.default // default value: 5, limit < 100
-    const trips = await database('train_trip').where({ train_type, train_number: args.train_number })
+    let query = database('train_trip').where({ train_type, train_number: args.train_number })
         .orderBy('initial_departure', 'desc')
         .select('*').limit(limit)
+    if (args.initial_departure)
+        query = query.where({ initial_departure: args.initial_departure })
+    const trips = await query
     await trip_rabbit_updates(trips)
     return trips
 }

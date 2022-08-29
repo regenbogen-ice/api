@@ -58,7 +58,7 @@ type Query {
     # q could be the vehicle number or name, train_type is ICE by default
     train_vehicle(q: String!, train_type: String): TrainVehicle 
     # get the train trips by a number & train_type (ICE by default), use limit=1 to get the current train trip (today)
-    train_trip(train_number: Int!, train_type: String, limit: Int): [TrainTrip]
+    train_trip(train_number: Int!, train_type: String, limit: Int, initial_departure: DateTime): [TrainTrip]
     coach(uic: String!): [Coach]!
     # autcomplete train vehicles, train trips and coach uic numbers, you can configure the search types (train_trip,train_vehicle,coach)
     autocomplete(q: String!, types: List): [Autocomplete]!
