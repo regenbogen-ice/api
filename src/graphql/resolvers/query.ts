@@ -22,8 +22,9 @@ export const trainTripQuery = async (parent: any, args: { train_number: number, 
     return trips
 }
 
-export const coachQuery = async (parent: any, args: { uic: string}) => {
-    return await database('coach').where({ uic: args.uic }).first()
+export const coachQuery = async (parent: any, args: { uic: string, limit?: number}) => {
+    const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.coaches.max ? args.limit : staticConfig.RETURN_LIMIT.coaches.default : staticConfig.RETURN_LIMIT.coaches.default
+    return await database('coach').where({ uic: args.uic }).limit(limit)
 }
 
 export const autocompleteQuery = async (parent: any, args: { q: string, types?: string[]}) => {

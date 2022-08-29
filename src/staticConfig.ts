@@ -3,6 +3,7 @@ export default {
     API_PATH: '/api',
     RETURN_LIMIT: {
         train_trips: { default: 5, max: 500 },
-        coach_sequence: { default: 1, max: 20 }
+        coach_sequence: { default: 1, max: 20 },
+        coaches: { default: 1, max: 50 }
     }
 }
