@@ -2,12 +2,17 @@ import database from '../../database.js'
 import trip_rabbit_updates from '../../logics/trip_rabbit_update.js'
 import staticConfig from '../../staticConfig.js'
 import autocompletev2 from '../../webserver/paths/autocomplete/v2.js'
+import { getValueMapping, train_type_mapping, valueMappingWhereBuilder } from '../mappings.js'
 
 export const trainVehicleQuery = async (parent: any, args: { q: string, train_type?: string }) => {
-    const train_type = args.train_type || 'ICE'
-    let train_vehicle = await database('train_vehicle').where({ train_type, train_vehicle_number: args.q }).select('*').first()
+    const train_types = getValueMapping(train_type_mapping, args.train_type || 'ICE')
+    let train_vehicle = await database('train_vehicle')
+        .where(builder => valueMappingWhereBuilder(builder, 'train_type', train_types))
+        .where({ train_vehicle_number: args.q }).select('*').first()
     if (!train_vehicle) {
-        train_vehicle = await database('train_vehicle').where({ train_type }).whereRaw(`LOWER(train_vehicle_name) LIKE ?`, [args.q]).select('*').first()
+        train_vehicle = await database('train_vehicle')
+            .where(builder => valueMappingWhereBuilder(builder, 'train_type', train_types))
+            .whereRaw(`LOWER(train_vehicle_name) LIKE ?`, [args.q]).select('*').first()
     }
     return train_vehicle
 }
