@@ -3,17 +3,17 @@ import { error, info } from '../logger.js'
 import cors from 'cors'
 import { RegenbogenICEError } from '../errors.js'
 import { randomBytes } from 'crypto'
-import Sentry from '@sentry/node'
 import { apolloServer } from '../graphql/server.js'
 
 
 export const app = express()
-
+/*
 if (process.env.SENTRY_DSN) {
     Sentry.init({ dsn: process.env.SENTRY_DSN })
     Sentry.setTag('environment', process.env.ENVIRONMENT || 'unknown')
     app.use(Sentry.Handlers.requestHandler())
 }
+*/
 
 apolloServer.applyMiddleware({ app })
 app.use(express.json())
@@ -23,8 +23,8 @@ const HTTP_HOST = process.env.HTTP_HOST || '::1'
 const HTTP_PORT = parseInt(process.env.HTTP_PORT || '3030')
 
 export const start = () => {
-    if (process.env.SENTRY_DSN)
-        app.use(Sentry.Handlers.errorHandler());
+    // if (process.env.SENTRY_DSN)
+    //    app.use(Sentry.Handlers.errorHandler());
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {
         if (res.headersSent) {
             return next(err)
