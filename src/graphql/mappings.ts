@@ -1,5 +1,5 @@
 export const getValueMapping = (mapping: { [key: string]: string }, value: string): string[] => {
-    const keys: string[] = []
+    const keys: string[] = [value]
     for (const [k, v] of Object.entries(mapping)) {
         if (v == value)
             keys.push(k)
