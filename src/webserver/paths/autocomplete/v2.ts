@@ -49,8 +49,13 @@ const v2 = async ({ q, types }: V2Request): Promise<AutoCompleteResponse> => {
     } else {
         if (Number(q)) {
             if (types.includes('train_vehicle')) {
-                possibilities.push(...getSortedAutoCompleteList(q, await database('train_vehicle').where('train_vehicle_number', 'like', `%${q}%`).select(['train_vehicle_number', 'train_type']))
-                    .map(v => ({ guess: String(v.train_vehicle_number), train_type: v.train_type, type: 'train_vehicle' })))
+                possibilities.push(
+                    ...getSortedAutoCompleteList(
+                        q,
+                        (await database('train_vehicle').where('train_vehicle_number', 'like', `%${q}%`).select(['train_vehicle_number', 'train_type']))
+                            .map(v => ({ guess: String(v.train_vehicle_number), train_type: v.train_type, type: 'train_vehicle' }))
+                        )
+                    )
             }
             if (types.includes('train_trip')) {
                 const trains = await database('train_trip')
