@@ -1,6 +1,7 @@
 import { AutoCompleteResponse } from '../../../../@types/index.js'
 import database from "../../../database.js"
 import { RegenbogenICEError } from '../../../errors.js'
+import { train_type_mapping } from '../../../graphql/mappings.js'
 import { ParserArguments } from "../../helpers/parser.js"
 import { getSortedAutoCompleteList } from "./logic.js"
 
@@ -53,7 +54,7 @@ const v2 = async ({ q, types }: V2Request): Promise<AutoCompleteResponse> => {
                     ...getSortedAutoCompleteList(
                         q,
                         (await database('train_vehicle').where('train_vehicle_number', 'like', `%${q}%`).select(['train_vehicle_number', 'train_type']))
-                            .map(v => ({ guess: String(v.train_vehicle_number), train_type: v.train_type, type: 'train_vehicle' }))
+                            .map(v => ({ guess: String(v.train_vehicle_number), train_type: train_type_mapping[v.train_type] || v.train_type, type: 'train_vehicle' }))
                         )
                     )
             }
@@ -76,7 +77,7 @@ const v2 = async ({ q, types }: V2Request): Promise<AutoCompleteResponse> => {
             }
         } else if (types.includes('train_vehicle')) {
             possibilities = getSortedAutoCompleteList(q, (await database('train_vehicle').whereRaw('LOWER(train_vehicle_name) like ?', [`%${q}%`]).select(['train_vehicle_name', 'train_type']).limit(100))
-                .map(v => ({ guess: v.train_vehicle_name, train_type: v.train_type, type: 'train_vehicle' })))
+                .map(v => ({ guess: v.train_vehicle_name, train_type: train_type_mapping[v.train_type] || v.train_type, type: 'train_vehicle' })))
         }
     }
 
