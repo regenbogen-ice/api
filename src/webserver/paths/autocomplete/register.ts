@@ -6,4 +6,7 @@ import v2 from "./v2.js";
 register('GET', '/autocomplete/:q', { params: { q: {type: 'string', required: true }} }, v1)
 
 register('GET', '/v1/autocomplete/:q', { params: { q: {type: 'string', required: true }} }, v1)
-register('GET', '/v2/autocomplete/:q', { params: { q: {type: 'string', required: true }} }, v2)
+register('GET', '/v2/autocomplete/:q', { params: {
+    q: { type: 'string', required: true } },
+    query: { types: { type: 'list', default: 'train_vehicle,train_trip,coach'} }
+}, v2)

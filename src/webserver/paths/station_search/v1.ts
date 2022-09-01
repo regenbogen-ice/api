@@ -1,3 +1,4 @@
+import { StationSearchResponse } from '../../../../@types/index.js'
 import { stationEvaByName } from '../../../evaFetch.js'
 import { ParserArguments } from '../../helpers/parser.js'
 
@@ -6,12 +7,8 @@ type V1Request = {
     length: number
 }
 
-type V1Response = Array<{
-    evaNumber: number,
-    name: string
-}>
 
-const v1 = async (request: V1Request): Promise<V1Response> => {
+const v1 = async (request: V1Request): Promise<StationSearchResponse> => {
     return await stationEvaByName(request.q, request.length)
 }
 

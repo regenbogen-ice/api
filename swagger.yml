@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  description: "Tracke den Regenbogen-ICE auf seinem Weg durch ganz Deutschland"
-  title: "RegenbogenICE"
+  description: "DEPRECATED: Tracke den Regenbogen-ICE auf seinem Weg durch ganz Deutschland\n\nDEPRECATED!\nDiese Api wird nicht mehr weiter supported, bitten nutze die neue GraphQL Api unter dem Path https://regenbogen-ice.de/graphql."
+  title: "RegenbogenICE (DEPRECATED)"
   version: 1.0.0
   contact:
     email: contact@regenbogen-ice.de
@@ -16,6 +16,8 @@ tags:
     description: "Autocomplete for train vehicles."
   - name: "Train vehicle"
     description: "Get information about a train vehicle."
+  - name: "Train trip"
+    description: "Get information about a train trip. (e.g. ICE 1565)"
   - name: "Station search"
     description: "Search/autocomplete api for station search."
 
@@ -24,6 +26,7 @@ paths:
     get:
       operationId: "Autocomplete v1"
       tags: ["Autocomplete"]
+      deprecated: true
       parameters:
         - name: "q"
           in: "path"
@@ -41,12 +44,20 @@ paths:
     get:
       operationId: "Autocomplete v2"
       tags: ["Autocomplete"]
+      deprecated: true
       parameters:
         - name: "q"
           in: "path"
           required: true
           schema:
             type: string
+        - name: "types"
+          in: "query"
+          required: false
+          schema:
+            type: string
+            description: "List (seperated by ',') of search types. (train_vehicle, train_trip and coach)."
+            default: "train_vehicle,train_trip,coach"
       responses:
         200:
           description: "Returns list of suggestions sorted by best guess."
@@ -75,6 +86,7 @@ paths:
   /v1/train_vehicle:
     get:
       operationId: "Train vehicle v1"
+      deprecated: true
       tags: ["Train vehicle"]
       parameters:
         - name: "q"
@@ -138,6 +150,80 @@ paths:
                     type: string
                     description: "Error text"
                     example: "Train vehicle doesn't exist."
+  /v1/train_trip:
+    get:
+      operationId: "Train trip v1"
+      tags: ["Train trip"]
+      deprecated: true
+      parameters:
+        - name: "train_number"
+          in: "query"
+          required: true
+          schema:
+            type: integer
+        - name: "train_type"
+          in: "query"
+          required: false
+          schema:
+            type: string
+            default: "ICE"
+        - name: "trip_limit"
+          in: "query"
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: "include_marudor_link"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: "include_routes"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: "include_train_vehicle"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: "coach_sequence_limit"
+          in: "query"
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: "include_coaches"
+          in: "query"
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        200:
+          description: "List of train trips ordered by departure (desc)."
+          content:
+            application/json:
+              schema:
+                description: Ordered by initial_departure (descending).
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrainTrip"
+        404:
+          description: "Train trip doesn't exist."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: "Error text"
+                    example: "Train trip doesn't exist."
   /train_vehicle:
     get:
       deprecated: true
@@ -207,6 +293,7 @@ paths:
                     example: "Train vehicle doesn't exist."
   /v1/station_search/{q}:
     get:
+      deprecated: true
       operationId: "Station search v1"
       tags: ["Station search"]
       parameters:
@@ -265,9 +352,14 @@ components:
         properties: 
           guess:
             type: "string"
-          type:
+          train_type:
             type: "string"
             description: "The train type. (e.g. ICE or IC)"
+            example: "ICE"
+          type:
+            type: "string"
+            description: "The type of object. (train_vehicle, train_trip or coach)"
+            example: "train_vehicle"
     TrainTripStop:
       type: object
       properties:
@@ -300,7 +392,7 @@ components:
           type: integer
           deprecated: true
         train_number:
-          type: string
+          type: integer
         train_type:
           type: string
         origin_station:
@@ -320,7 +412,11 @@ components:
           format: date-time
         marudor:
           type: string
-          description: Marudor link to train trip. Enable by setting include_marudor_link to true.
+          description: "Marudor link to train trip. Enable by setting include_marudor_link to true. This value can be null. (e.g. IC's [except IC2])"
+        train_vehicle:
+          description: "Not available at train_vehicle endpoint. Enable this attribute by setting include_train_vehicle to true."
+          $ref: "#/components/schemas/TrainVehicle"
+          nullable: true
         stops:
           type: array
           items:
@@ -368,7 +464,7 @@ components:
           type: string
         trips:
           type: array
-          description: Set trip_limit to limit trips.
+          description: Set trip_limit to limit trips. Ordered by initial_departure (descending).
           items:
             $ref: "#/components/schemas/TrainTrip"
         coach_sequences:

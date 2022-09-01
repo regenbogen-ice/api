@@ -3,7 +3,7 @@ import { RegenbogenICEError } from "../../errors.js"
 
 
 export type VariableType = {
-    type: 'string' | 'boolean' | 'number',
+    type: 'string' | 'boolean' | 'number' | 'list',
     default?: string,
     required?: boolean
 }
@@ -29,6 +29,10 @@ export class ParserArguments {
     }
 
     getNumber(name: string): number {
+        return this.args[name]
+    }
+
+    getList<Type>(name: string): Array<Type> {
         return this.args[name]
     }
 }
@@ -59,6 +63,9 @@ const parseVariable = (input: string, type: VariableType, field: string): any =>
         } else {
             throw new RegenbogenICEError(`Bad Request. Boolean parsing error while parsing field ${field}.`, 400)
         }
+    } else if (type.type == 'list') {
+        const inputList = input.split(',')
+        return inputList
     }
 }
 

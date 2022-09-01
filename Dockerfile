@@ -12,6 +12,7 @@ FROM dependencies as build
 
 ENV NODE_ENV=production
 COPY src ./src
+COPY @types ./@types
 COPY knexfile.js tsconfig.json ./
 RUN yarn run build
 
@@ -35,6 +36,7 @@ ENV HTTP_PORT=80
 COPY --from=build /app/node_modules/ ./node_modules/
 COPY --from=build /app/dist/ ./dist/
 COPY --from=build /app/package.json ./
+COPY ./schema.graphql ./
 
 EXPOSE 80
 CMD ["yarn", "node", "dist/src/index.js"]
