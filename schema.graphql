@@ -51,7 +51,7 @@ type TrainVehicle {
     train_vehicle_number: Int!
     train_type(get_raw_type: Boolean): String! # e.g. ICE or IC ; get_raw_type=true means the type will not be IC but ICD or ICK
     timestamp: DateTime! # the timestamp at which the train vehicle was found
-    trips(limit: Int, ignore_finished_trips: Boolean): [TrainTrip]
+    trips(limit: Int, ignore_finished_trips: Boolean, min_trips: Int): [TrainTrip] # min_trips is relevant if you are using ignore_finished_trips to set the minimum of returned trips (also finished trips)
     coach_sequences(limit: Int): [CoachSequence] # there are multiple coach_sequences (the first one is the current and the other ones are the old), use limit 1 (default value) to get only the current
 }
 
