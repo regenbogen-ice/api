@@ -45,7 +45,8 @@ type Coach {
 }
 
 type TrainVehicle {
-    building_series: String
+    building_series: String # e.g. 401
+    building_series_name: String # e.g. ICE 1 Modernisiert (BR401)
     train_vehicle_name: String
     train_vehicle_number: Int!
     train_type(get_raw_type: Boolean): String! # e.g. ICE or IC ; get_raw_type=true means the type will not be IC but ICD or ICK
