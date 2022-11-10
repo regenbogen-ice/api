@@ -37,6 +37,7 @@ COPY --from=build /app/node_modules/ ./node_modules/
 COPY --from=build /app/dist/ ./dist/
 COPY --from=build /app/package.json ./
 COPY ./schema.graphql ./
+COPY ./sql ./sql
 
 EXPOSE 80
 CMD ["yarn", "node", "dist/src/index.js"]

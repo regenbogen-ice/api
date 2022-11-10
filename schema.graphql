@@ -8,6 +8,11 @@ type Autocomplete {
     train_type: String! # the type of the train, e.g. ICE or IC
 }
 
+type MostStation {
+    count: Int!
+    station: EvaNumber!
+}
+
 type TrainStop {
     cancelled: Boolean!
     station: EvaNumber!
@@ -53,6 +58,7 @@ type TrainVehicle {
     timestamp: DateTime! # the timestamp at which the train vehicle was found
     trips(limit: Int, ignore_finished_trips: Boolean, min_trips: Int): [TrainTrip!]! # min_trips is relevant if you are using ignore_finished_trips to set the minimum of returned trips (also finished trips)
     coach_sequences(limit: Int): [CoachSequence!]! # there are multiple coach_sequences (the first one is the current and the other ones are the old), use limit 1 (default value) to get only the current
+    most_stations(limit: Int): [MostStation!]! # get a list of stations where the train vehicle is at the most time
 }
 
 type Query {
