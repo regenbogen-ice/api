@@ -6,7 +6,7 @@ import { rabbit } from '../../rabbit.js'
 export const trainTripStopsQuery = async (parent: any, args: any, conext: any, info: any) => {
     let stops = await database('train_trip_route').where({ train_trip_id: parent.id })
         .orderBy('index', 'asc')
-        .select(['cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
+        .select(['cancelled', 'station', 'scheduled_departure', 'departure', 'departure_delay', 'scheduled_arrival', 'arrival', 'arrival_delay'])
     if (parent.origin) {
         const origin_stations = stops.filter(e => e.station == parent.origin)
         if (origin_stations.length == 1)

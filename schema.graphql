@@ -19,8 +19,10 @@ type TrainStop {
     # scheduled_departure & departure OR/AND scheduled_arrival & arrival will be not null
     scheduled_departure: DateTime
     departure: DateTime
+    departure_delay: Int
     scheduled_arrival: DateTime
     arrival: DateTime
+    arrival_delay: Int
 }
 
 type TrainTrip {
