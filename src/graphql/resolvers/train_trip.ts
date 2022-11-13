@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import database from '../../database.js'
 import { JSToISO } from '../../dateTimeFormats.js'
 import { rabbit } from '../../rabbit.js'
+import { TRAIN_VEHICLE_SELECTS } from '../sql_selects.js'
 
 export const trainTripStopsQuery = async (parent: any, args: any, conext: any, info: any) => {
     let stops = await database('train_trip_route').where({ train_trip_id: parent.id })
@@ -34,7 +35,7 @@ export const trainTripStopsQuery = async (parent: any, args: any, conext: any, i
 export const trainTripVehiclesQuery = async (parent: any) => {
     return await database('train_trip_vehicle').where({ train_trip_id: parent.id })
         .join('train_vehicle', 'train_vehicle.id', '=', 'train_trip_vehicle.train_vehicle_id')
-        .select(['train_vehicle.building_series', 'train_vehicle.train_vehicle_name', 'train_vehicle.train_vehicle_number', 'train_vehicle.train_type', 'train_vehicle.timestamp', 'train_vehicle.id'])
+        .select(TRAIN_VEHICLE_SELECTS)
 }
 
 export const trainTripBahnExpertQuery = async (parent: any) => {

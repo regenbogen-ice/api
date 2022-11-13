@@ -14,6 +14,11 @@ type MostStation {
     station: EvaNumber!
 }
 
+type MostTrainVehicle {
+    count: Int!
+    train_vehicle: TrainVehicle!
+}
+
 type TrainStop {
     cancelled: Boolean!
     station: EvaNumber!
@@ -37,6 +42,7 @@ type TrainTrip {
     train_vehicles: [TrainVehicle!]! # the train vehicles that will be driven on this trip (list because a trip can be driven by 2 ICE's)
     coach_links(identificationNumber: String): [CoachLink!]!
     average_delay(since: Since): Float! # default since 1 month; output in minutes
+    most_train_vehicles(limit: Int): [MostTrainVehicle]!
 }
 
 type CoachSequence {

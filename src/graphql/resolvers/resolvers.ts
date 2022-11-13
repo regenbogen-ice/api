@@ -5,8 +5,9 @@ import { sinceScalar } from '../scalars/since.js';
 import { coachCoachLinksQuery, coachCoachSequenceQuery } from './coach.js';
 import { coachLinkCoachQuery, coachLinkTrainTripQuery } from './coach_link.js';
 import { coachSequenceCoachesQuery, coachSequenceTrainVehicleQuery } from './coach_sequence.js';
+import { mostTrainVehicleTrainVehicle } from './most_train_vehicle.js';
 import { autocompleteQuery, coachQuery, trainTripQuery, trainVehicleQuery } from './query.js';
-import { trainTripAverageDelay, trainVehicleAverageDelay } from './statistics.js';
+import { trainTripAverageDelay, trainTripMostTrainVehicles, trainVehicleAverageDelay } from './statistics.js';
 import { trainTripBahnExpertQuery, trainTripCoachLinksQuery, trainTripStopsQuery, trainTripVehiclesQuery } from './train_trip.js';
 import { trainVehicleCoachSequencesQuery, trainVehicleTrainTypeQuery, trainVehicleTripsQuery, mostStationsQuery } from './train_vehicle.js';
 
@@ -33,7 +34,8 @@ export default {
         train_vehicles: trainTripVehiclesQuery,
         bahn_expert: trainTripBahnExpertQuery,
         coach_links : trainTripCoachLinksQuery,
-        average_delay: trainTripAverageDelay
+        average_delay: trainTripAverageDelay,
+        most_train_vehicles: trainTripMostTrainVehicles,
     },
     CoachSequence: {
         coaches: coachSequenceCoachesQuery,
@@ -46,5 +48,8 @@ export default {
     CoachLink: {
         trip: coachLinkTrainTripQuery,
         coach: coachLinkCoachQuery
+    },
+    MostTrainVehicle: {
+        train_vehicle: mostTrainVehicleTrainVehicle
     }
 }

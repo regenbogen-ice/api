@@ -1,0 +1,1 @@
+export const TRAIN_VEHICLE_SELECTS = ['train_vehicle.building_series', 'train_vehicle.train_vehicle_name', 'train_vehicle.train_vehicle_number', 'train_vehicle.train_type', 'train_vehicle.timestamp', 'train_vehicle.id']
