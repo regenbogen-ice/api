@@ -40,3 +40,11 @@ export const trainTripVehiclesQuery = async (parent: any) => {
 export const trainTripBahnExpertQuery = async (parent: any) => {
     return `https://bahn.expert/details/${parent.train_type}%20${parent.train_number}/${DateTime.fromJSDate(parent.initial_departure).toISO()}`
 }
+
+export const trainTripCoachLinksQuery = async (parent: any, args : { identification_number?: string }) => {
+    let sql = database('train_trip_coaches_identification').where({ train_trip_id: parent.id })
+    if (args.identification_number) {
+        sql = sql.where({ identification_number: args.identification_number })
+    }
+    return await sql.limit(40)
+}

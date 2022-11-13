@@ -27,6 +27,7 @@ type TrainTrip {
     bahn_expert: String # A generated link to https://bahn.expert
     stops: [TrainStop]
     train_vehicles: [TrainVehicle] # the train vehicles that will be driven on this trip (list because a trip can be driven by 2 ICE's)
+    coach_links(identificationNumber: String): [CoachLink!]!
 }
 
 type CoachSequence {
@@ -41,7 +42,14 @@ type Coach {
     type: String! # e.g. Bpmz
     uic: String! # there are unique uic numbers for every coach
     category: String! # e.g. STEUERWAGENERSTEKLASSE
-    coach_sequence: CoachSequence!
+    coach_sequence: CoachSequence
+    coach_links: [CoachLink!]!
+}
+
+type CoachLink {
+    trip: TrainTrip!
+    coach: Coach!
+    identification_number: String # coach number
 }
 
 type TrainVehicle {
