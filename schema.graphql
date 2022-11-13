@@ -1,6 +1,7 @@
 scalar EvaNumber # response type: string (The station name)
 scalar DateTime # response type: string (ISO-FORMAT DateTime)
 scalar List # ',' seperated string values
+scalar Since # e.g. '1y' (1 year) or '4m' (4 months) or '1w' (1 week) or '12d' (12 days)
 
 type Autocomplete {
     guess: String! # this means the autocompleted guess like "München"
@@ -19,10 +20,10 @@ type TrainStop {
     # scheduled_departure & departure OR/AND scheduled_arrival & arrival will be not null
     scheduled_departure: DateTime
     departure: DateTime
-    departure_delay: Int
+    departure_delay: Int # in minutes
     scheduled_arrival: DateTime
     arrival: DateTime
-    arrival_delay: Int
+    arrival_delay: Int # in minutes
 }
 
 type TrainTrip {
@@ -35,6 +36,7 @@ type TrainTrip {
     stops: [TrainStop!]!
     train_vehicles: [TrainVehicle!]! # the train vehicles that will be driven on this trip (list because a trip can be driven by 2 ICE's)
     coach_links(identificationNumber: String): [CoachLink!]!
+    average_delay(since: Since): Float! # default since 1 month; output in minutes
 }
 
 type CoachSequence {
@@ -69,6 +71,7 @@ type TrainVehicle {
     trips(limit: Int, ignore_finished_trips: Boolean, min_trips: Int): [TrainTrip!]! # min_trips is relevant if you are using ignore_finished_trips to set the minimum of returned trips (also finished trips)
     coach_sequences(limit: Int): [CoachSequence!]! # there are multiple coach_sequences (the first one is the current and the other ones are the old), use limit 1 (default value) to get only the current
     most_stations(limit: Int): [MostStation!]! # get a list of stations where the train vehicle is at the most time
+    average_delay(since: Since): Float! # default since 1 month; output in minutes
 }
 
 type Query {
