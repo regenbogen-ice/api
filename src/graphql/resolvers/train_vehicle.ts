@@ -16,7 +16,7 @@ export const trainVehicleTripsQuery = async (parent: any, args: { limit?: number
     let query = queryTemplate().limit(limit)
     if (args.ignore_finished_trips) {
         query = query.whereRaw('(SELECT MAX(arrival) FROM train_trip_route WHERE train_trip_id=train_trip.id) > ?', [toSQLTimestamp(DateTime.now().minus({ minutes: 5 }))])
-            .whereRaw('(SELECT COUNT(id) FROM train_trip_route WHERE train_trip_id=train_trip_id) > 0)')
+            .whereRaw('(SELECT COUNT(id) FROM train_trip_route WHERE train_trip_id=train_trip_id) > 0')
     }
     let trips = await query
     if (trips.length < min_trips && args.ignore_finished_trips) {
