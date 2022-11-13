@@ -30,6 +30,13 @@ export const trainTripQuery = async (parent: any, args: { train_number: number, 
     return trips
 }
 
+export const trainTripsQuery = async (parent: any, args: { train_number: number, train_type?: string}) => {
+    return {
+        train_type: args.train_type || 'ICE',
+        train_number: args.train_number
+    }
+}
+
 export const coachQuery = async (parent: any, args: { uic: string, limit?: number}) => {
     const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.coaches.max ? args.limit : staticConfig.RETURN_LIMIT.coaches.default : staticConfig.RETURN_LIMIT.coaches.default
     return await database('coach').where({ uic: args.uic }).limit(limit)

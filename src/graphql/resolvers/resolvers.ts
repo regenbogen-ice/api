@@ -6,9 +6,9 @@ import { coachCoachLinksQuery, coachCoachSequenceQuery } from './coach.js';
 import { coachLinkCoachQuery, coachLinkTrainTripQuery } from './coach_link.js';
 import { coachSequenceCoachesQuery, coachSequenceTrainVehicleQuery } from './coach_sequence.js';
 import { mostTrainVehicleTrainVehicle } from './most_train_vehicle.js';
-import { autocompleteQuery, coachQuery, trainTripQuery, trainVehicleQuery } from './query.js';
-import { trainTripAverageDelay, trainTripMostTrainVehicles, trainVehicleAverageDelay } from './statistics.js';
-import { trainTripBahnExpertQuery, trainTripCoachLinksQuery, trainTripStopsQuery, trainTripVehiclesQuery } from './train_trip.js';
+import { autocompleteQuery, coachQuery, trainTripQuery, trainTripsQuery, trainVehicleQuery } from './query.js';
+import { trainTripsAverageDelay, trainTripsMostTrainVehicles, trainVehicleAverageDelay } from './statistics.js';
+import { trainTripBahnExpertQuery, trainTripCoachLinksQuery, trainTripStopsQuery, trainTripTrainTripsInformation, trainTripVehiclesQuery } from './train_trip.js';
 import { trainVehicleCoachSequencesQuery, trainVehicleTrainTypeQuery, trainVehicleTripsQuery, mostStationsQuery } from './train_vehicle.js';
 
 export default {
@@ -19,6 +19,7 @@ export default {
     Query: {
         train_vehicle: trainVehicleQuery,
         train_trip: trainTripQuery,
+        train_trips_information: trainTripsQuery,
         coach: coachQuery,
         autocomplete: autocompleteQuery
     },
@@ -34,8 +35,11 @@ export default {
         train_vehicles: trainTripVehiclesQuery,
         bahn_expert: trainTripBahnExpertQuery,
         coach_links : trainTripCoachLinksQuery,
-        average_delay: trainTripAverageDelay,
-        most_train_vehicles: trainTripMostTrainVehicles,
+        train_trips_information: trainTripTrainTripsInformation
+    },
+    TrainTripsInformation: {
+        average_delay: trainTripsAverageDelay,
+        most_train_vehicles: trainTripsMostTrainVehicles,
     },
     CoachSequence: {
         coaches: coachSequenceCoachesQuery,

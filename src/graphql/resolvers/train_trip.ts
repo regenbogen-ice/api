@@ -49,3 +49,10 @@ export const trainTripCoachLinksQuery = async (parent: any, args : { identificat
     }
     return await sql.limit(40)
 }
+
+export const trainTripTrainTripsInformation = async (parent: any) => {
+    return {
+        train_type: parent.train_type,
+        train_number: parent.train_number
+    }
+}

@@ -41,6 +41,11 @@ type TrainTrip {
     stops: [TrainStop!]!
     train_vehicles: [TrainVehicle!]! # the train vehicles that will be driven on this trip (list because a trip can be driven by 2 ICE's)
     coach_links(identificationNumber: String): [CoachLink!]!
+    # get some information about all train trips with this train type and number
+    train_trips_information: TrainTripsInformation!
+}
+
+type TrainTripsInformation {
     average_delay(since: Since): Float! # default since 1 month; output in minutes
     most_train_vehicles(limit: Int): [MostTrainVehicle]!
 }
@@ -85,6 +90,8 @@ type Query {
     train_vehicle(q: String!, train_type: String): TrainVehicle
     # get the train trips by a number & train_type (ICE by default), use limit=1 to get the current train trip (today)
     train_trip(train_number: Int!, train_type: String, limit: Int, initial_departure: DateTime): [TrainTrip!]!
+    # get information abot multiple trains
+    train_trips_information(train_number: Int!, train_type: String): TrainTripsInformation!
     coach(uic: String!, limit: Int): [Coach!]!
     # autcomplete train vehicles, train trips and coach uic numbers, you can configure the search types (train_trip,train_vehicle,coach)
     autocomplete(q: String!, types: List): [Autocomplete!]!
