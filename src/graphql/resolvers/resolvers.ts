@@ -22,7 +22,7 @@ export default {
         train_type: trainVehicleTrainTypeQuery,
         trips: trainVehicleTripsQuery,
         coach_sequences: trainVehicleCoachSequencesQuery,
-        most_stations: mostStationsQuery
+        most_stations: mostStationsQuery,
     },
     TrainTrip: {
         stops: trainTripStopsQuery,
