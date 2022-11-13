@@ -6,7 +6,7 @@ import { coachLinkCoachQuery, coachLinkTrainTripQuery } from './coach_link.js';
 import { coachSequenceCoachesQuery, coachSequenceTrainVehicleQuery } from './coach_sequence.js';
 import { autocompleteQuery, coachQuery, trainTripQuery, trainVehicleQuery } from './query.js';
 import { trainTripBahnExpertQuery, trainTripCoachLinksQuery, trainTripStopsQuery, trainTripVehiclesQuery } from './train_trip.js';
-import { trainVehicleCoachSequencesQuery, trainVehicleTrainTypeQuery, trainVehicleTripsQuery } from './train_vehicle.js';
+import { trainVehicleCoachSequencesQuery, trainVehicleTrainTypeQuery, trainVehicleTripsQuery, mostStationsQuery } from './train_vehicle.js';
 
 export default {
     EvaNumber: evaNumberScalar,
@@ -21,7 +21,8 @@ export default {
     TrainVehicle: {
         train_type: trainVehicleTrainTypeQuery,
         trips: trainVehicleTripsQuery,
-        coach_sequences: trainVehicleCoachSequencesQuery
+        coach_sequences: trainVehicleCoachSequencesQuery,
+        most_stations: mostStationsQuery
     },
     TrainTrip: {
         stops: trainTripStopsQuery,

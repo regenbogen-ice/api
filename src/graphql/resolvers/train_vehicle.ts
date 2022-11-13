@@ -4,6 +4,7 @@ import { toSQLTimestamp } from '../../dateTimeFormats.js'
 import trip_rabbit_updates from '../../logics/trip_rabbit_update.js'
 import staticConfig from '../../staticConfig.js'
 import { train_type_mapping } from '../mappings.js'
+import externalSQLLoader from '../../externalSqlLoader.js'
 
 export const trainVehicleTripsQuery = async (parent: any, args: { limit?: number, ignore_finished_trips?: boolean, min_trips?: number }) => {
     const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.train_trips.max ? args.limit : staticConfig.RETURN_LIMIT.train_trips.default : staticConfig.RETURN_LIMIT.train_trips.default // default value: 5, limit < 100
@@ -36,4 +37,9 @@ export const trainVehicleTrainTypeQuery = async (parent: any, args: { get_raw_ty
     if (args.get_raw_type)
         return parent.train_type
     return train_type_mapping[parent.train_type] || parent.train_type
+}
+
+export const mostStationsQuery = async (parent: any, args : { limit?: number}) => {
+    const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.most_stations.max ? args.limit : staticConfig.RETURN_LIMIT.most_stations.default : staticConfig.RETURN_LIMIT.most_stations.default // default value: 10, limit < 50
+    return await externalSQLLoader('most_stations', [parent.id, limit])
 }
