@@ -10,6 +10,7 @@ type Config = {
     coaches: ConfigObject
     most_stations: ConfigObject
     most_train_vehicles: ConfigObject
+    coach_links:  ConfigObject
 }
 
 const config: Config = {
@@ -30,6 +31,10 @@ const config: Config = {
         max: 50
     },
     most_train_vehicles: {
+        default: 10,
+        max: 50
+    },
+    coach_links:{
         default: 10,
         max: 50
     }

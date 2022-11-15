@@ -63,7 +63,7 @@ type Coach {
     uic: String! # there are unique uic numbers for every coach
     category: String! # e.g. STEUERWAGENERSTEKLASSE
     coach_sequence: CoachSequence
-    coach_links: [CoachLink!]!
+    coach_links(identification_number: String, limit: Int): [CoachLink!]!
 }
 
 type CoachLink {
