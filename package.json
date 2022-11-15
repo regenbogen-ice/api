@@ -32,7 +32,8 @@
     "rabbit-queue": "^5.4.1",
     "redis": "^4.0.4",
     "rss": "^1.2.2",
-    "shoutrrrd-js": "^1.0.3"
+    "shoutrrrd-js": "^1.0.3",
+    "sitemap": "^7.1.1"
   },
   "scripts": {
     "build": "tsc",
