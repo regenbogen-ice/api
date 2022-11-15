@@ -32,7 +32,7 @@ const getVehicleEntries = async () => {
         .select(['train_vehicle_number', 'train_vehicle_name', 'train_type'])
 
     return vehicles.map(vehicle => ({
-        url: `/vehicle/${vehicle.train_type}/${vehicle.train_vehicle_name || vehicle.train_vehicle_number}`,
+        url: `/vehicle/${vehicle.train_type}/${encodeURIComponent(vehicle.train_vehicle_name || vehicle.train_vehicle_number)}`,
         priority: vehicle.train_vehicle_name ? 0.5 : 0.3,
         changefreq: 'always',
     }))
