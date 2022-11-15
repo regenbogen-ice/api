@@ -13,7 +13,7 @@ const handleResponse = async (path: string, response: Response, ignoredStatusCod
 }
 
 export const stationNameByEva = async (evaNumber: number): Promise<string> => {
-    const path = staticConfig.MARUDOR_URL + `/stopPlace/v1/${evaNumber}`
+    const path = staticConfig.BAHN_EXPERT_URL + `/stopPlace/v1/${evaNumber}`
     const redisResponse = await redis.get(`eva_${evaNumber}`)
     if (redisResponse)
         return redisResponse
@@ -23,7 +23,7 @@ export const stationNameByEva = async (evaNumber: number): Promise<string> => {
 }
 
 export const stationEvaByName = async (searchTerm: string, length: number): Promise<{ evaNumber: number, name: string }[]> => {
-    const path = staticConfig.MARUDOR_URL + `/stopPlace/v1/search/${searchTerm}?max=${length * 2}`
+    const path = staticConfig.BAHN_EXPERT_URL + `/stopPlace/v1/search/${searchTerm}?max=${length * 2}`
     const redisResponse = await redis.get(`eva_search_${searchTerm}_${length}`)
     if (redisResponse)
         return JSON.parse(redisResponse)
