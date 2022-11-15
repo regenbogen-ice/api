@@ -2,12 +2,12 @@ import { DateTime } from 'luxon'
 import database from '../../database.js'
 import { toSQLTimestamp } from '../../dateTimeFormats.js'
 import trip_rabbit_updates from '../../logics/trip_rabbit_update.js'
-import staticConfig from '../../staticConfig.js'
 import { train_type_mapping } from '../mappings.js'
 import externalSQLLoader from '../../externalSqlLoader.js'
+import limitParser from '../../limitParser.js'
 
 export const trainVehicleTripsQuery = async (parent: any, args: { limit?: number, ignore_finished_trips?: boolean, min_trips?: number }) => {
-    const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.train_trips.max ? args.limit : staticConfig.RETURN_LIMIT.train_trips.default : staticConfig.RETURN_LIMIT.train_trips.default // default value: 5, limit < 100
+    const limit = limitParser('train_trips', args.limit)
     const min_trips = args.min_trips != null && args.min_trips != undefined && args.min_trips < limit ? args.min_trips : 1
     const queryTemplate = () => database('train_trip_vehicle').where({ train_vehicle_id: parent.id })
         .join('train_trip', 'train_trip_vehicle.train_trip_id', '=', 'train_trip.id')
@@ -29,9 +29,8 @@ export const trainVehicleTripsQuery = async (parent: any, args: { limit?: number
 }
 
 export const trainVehicleCoachSequencesQuery = async (parent: any, args: { limit?: number }) => {
-    const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.coach_sequence.max ? args.limit : staticConfig.RETURN_LIMIT.coach_sequence.default : staticConfig.RETURN_LIMIT.coach_sequence.default // default value: 5, limit < 100
     return await database('coach_sequence').where({ train_vehicle_id: parent.id })
-        .orderBy('timestamp', 'desc').select(['id', 'timestamp', 'train_vehicle_id']).limit(limit)
+        .orderBy('timestamp', 'desc').select(['id', 'timestamp', 'train_vehicle_id']).limit(limitParser('coach_sequence', args.limit))
 }
 
 export const trainVehicleTrainTypeQuery = async (parent: any, args: { get_raw_type?: boolean } ) => {
@@ -41,6 +40,5 @@ export const trainVehicleTrainTypeQuery = async (parent: any, args: { get_raw_ty
 }
 
 export const mostStationsQuery = async (parent: any, args : { limit?: number}) => {
-    const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.most_stations.max ? args.limit : staticConfig.RETURN_LIMIT.most_stations.default : staticConfig.RETURN_LIMIT.most_stations.default // default value: 10, limit < 50
-    return await externalSQLLoader('most_stations', [parent.id, limit])
+    return await externalSQLLoader('most_stations', [parent.id, limitParser('most_stations', args.limit)])
 }

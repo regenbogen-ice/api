@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import { timestampFromSince, toSQLTimestamp } from '../../dateTimeFormats.js'
 import externalSQLLoader from '../../externalSqlLoader.js'
-import staticConfig from '../../staticConfig.js'
+import limitParser from '../../limitParser.js'
 
 export const trainVehicleAverageDelay = async (parent: any, args: { since: DateTime}) => {
     const since = args.since || timestampFromSince('1m')
@@ -14,6 +14,5 @@ export const trainTripsAverageDelay = async (parent: any, args: { since: DateTim
 }
 
 export const trainTripsMostTrainVehicles = async (parent: any, args: { limit?: number }) => {
-    const limit = args.limit ? args.limit <= staticConfig.RETURN_LIMIT.most_train_vehicles.max ? args.limit : staticConfig.RETURN_LIMIT.most_train_vehicles.default : staticConfig.RETURN_LIMIT.most_train_vehicles.default // default value: 10, limit < 50
-    return (await externalSQLLoader('most_train_vehicle', [parent.train_type, parent.train_number, limit]))
+    return (await externalSQLLoader('most_train_vehicle', [parent.train_type, parent.train_number, limitParser('most_train_vehicles', args.limit)]))
 }
