@@ -2,11 +2,12 @@ import { DateTime } from 'luxon'
 import database from '../../database.js'
 import { JSToISO } from '../../dateTimeFormats.js'
 import { rabbit } from '../../rabbit.js'
+import { TRAIN_VEHICLE_SELECTS } from '../sql_selects.js'
 
 export const trainTripStopsQuery = async (parent: any, args: any, conext: any, info: any) => {
     let stops = await database('train_trip_route').where({ train_trip_id: parent.id })
         .orderBy('index', 'asc')
-        .select(['cancelled', 'station', 'scheduled_departure', 'departure', 'scheduled_arrival', 'arrival'])
+        .select(['cancelled', 'station', 'scheduled_departure', 'departure', 'departure_delay', 'scheduled_arrival', 'arrival', 'arrival_delay'])
     if (parent.origin) {
         const origin_stations = stops.filter(e => e.station == parent.origin)
         if (origin_stations.length == 1)
@@ -34,9 +35,24 @@ export const trainTripStopsQuery = async (parent: any, args: any, conext: any, i
 export const trainTripVehiclesQuery = async (parent: any) => {
     return await database('train_trip_vehicle').where({ train_trip_id: parent.id })
         .join('train_vehicle', 'train_vehicle.id', '=', 'train_trip_vehicle.train_vehicle_id')
-        .select(['train_vehicle.building_series', 'train_vehicle.train_vehicle_name', 'train_vehicle.train_vehicle_number', 'train_vehicle.train_type', 'train_vehicle.timestamp', 'train_vehicle.id'])
+        .select(TRAIN_VEHICLE_SELECTS)
 }
 
 export const trainTripBahnExpertQuery = async (parent: any) => {
     return `https://bahn.expert/details/${parent.train_type}%20${parent.train_number}/${DateTime.fromJSDate(parent.initial_departure).toISO()}`
+}
+
+export const trainTripCoachLinksQuery = async (parent: any, args : { identification_number?: string }) => {
+    let sql = database('train_trip_coaches_identification').where({ train_trip_id: parent.id })
+    if (args.identification_number) {
+        sql = sql.where({ identification_number: args.identification_number })
+    }
+    return await sql.limit(40)
+}
+
+export const trainTripTrainTripsInformation = async (parent: any) => {
+    return {
+        train_type: parent.train_type,
+        train_number: parent.train_number
+    }
 }
