@@ -57,7 +57,7 @@ type CoachSequence {
 }
 
 type Coach {
-    index: Int! # index or (length - index - 1) (the first coach of a 10 coaches long coach_sequence has the index 0 or 9)
+    index: Int # index or (length - index - 1) (the first coach of a 10 coaches long coach_sequence has the index 0 or 9)
     class: Int! # first, second or third class (third class means LOK i think)
     type: String! # e.g. Bpmz
     uic: String! # there are unique uic numbers for every coach
