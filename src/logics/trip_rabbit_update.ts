@@ -8,6 +8,7 @@ const trip_rabbit_updates = async (trip: any) => {
             trainId: trip.id,
             trainNumber: trip.train_number,
             trainType: trip.train_type,
+	    initialDeparture: JSToISO(trip.initial_departure),
             evaDeparture: JSToISO(trip.initial_departure),
             evaNumber: trip.origin_station
         })
