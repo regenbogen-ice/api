@@ -13,8 +13,5 @@ export const evaNumberScalar = new GraphQLScalarType({
                 return "Unknown"
             }
         }
-    },
-    parseValue: async (value: unknown) => {
-        return (await stationEvaByName(value as string, 10))[0].evaNumber
     }
 })

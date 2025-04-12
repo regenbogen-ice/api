@@ -1,6 +1,7 @@
 import fetch, { Response } from 'node-fetch'
 import staticConfig from './staticConfig.js'
 import redis from './redis.js'
+import { XMLParser } from 'fast-xml-parser'
 
 type StopPlaceResponse = { evaNumber: string, name: string, availableTransports: string[] }
 type StopPlaceSearchResponse = StopPlaceResponse[]
@@ -13,13 +14,19 @@ const handleResponse = async (path: string, response: Response, ignoredStatusCod
 }
 
 export const stationNameByEva = async (evaNumber: number): Promise<string> => {
-    const path = staticConfig.BAHN_EXPERT_URL + `/stopPlace/v1/${evaNumber}`
+    const path = staticConfig.IRIS_STATION_PATH + `/${evaNumber}`
     const redisResponse = await redis.get(`eva_${evaNumber}`)
     if (redisResponse)
         return redisResponse
-    const response: StopPlaceResponse = await handleResponse(path, await fetch(path))
-    redis.set(`eva_${evaNumber}`, response.name)
-    return response.name
+    const response = await fetch(path)
+    const text = await response.text()
+    if (!response.ok)
+        throw new Error(`Error while fetching ${path}: Status code ${response.status}: ${text}`)
+    const parser = new XMLParser()
+    const parsed = parser.parse(text)
+    const stationName = parsed['stations']['station']['name']
+    redis.set(`eva_${evaNumber}`, stationName)
+    return stationName
 }
 
 export const stationEvaByName = async (searchTerm: string, length: number): Promise<{ evaNumber: number, name: string }[]> => {
