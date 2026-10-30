@@ -1,4 +1,4 @@
-FROM node:16-alpine as base
+FROM node:22.23.4-alpine as base
 WORKDIR /app
 
 COPY package.json yarn.lock ./
@@ -17,7 +17,7 @@ COPY knexfile.js tsconfig.json ./
 RUN yarn run build
 
 
-FROM node:16-alpine
+FROM node:22.23.4-alpine
 WORKDIR /app
 
 ENV NODE_ENV=production

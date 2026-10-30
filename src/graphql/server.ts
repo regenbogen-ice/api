@@ -1,39 +1,32 @@
-import { ApolloServer } from 'apollo-server-express'
-import {
-    ApolloServerPluginLandingPageGraphQLPlayground
-} from "apollo-server-core";
+import { ApolloServer } from '@apollo/server'
 import { randomBytes } from 'crypto'
 import { readFileSync } from 'fs'
 import resolvers from './resolvers/resolvers.js'
-import { default as origResponseCachePlugin } from 'apollo-server-plugin-response-cache';
-
-
-type PluginType = typeof origResponseCachePlugin
-const responseCachePlugin = (origResponseCachePlugin as any).default as PluginType
+import responseCachePlugin from '@apollo/server-plugin-response-cache'
+import { unwrapResolverError } from '@apollo/server/errors'
 
 export const apolloServer = new ApolloServer({
     typeDefs: readFileSync(process.env.GRAPHQL_SCHEMA_PATH || 'schema.graphql', { encoding: 'utf-8' }),
     resolvers,
-    cache: 'bounded',
     introspection: true,
-    formatError: (error) => {
+    formatError: (formattedError, error) => {
         const errorCode = randomBytes(16).toString('hex')
-        console.error(`Error ${errorCode} while request: ${error}`)
-        if (error.stack) {
-            console.log(error.stack)
+        const originalError = unwrapResolverError(error)
+        console.error(`Error ${errorCode} while request: ${originalError}`)
+        if (originalError instanceof Error && originalError.stack) {
+            console.log(originalError.stack)
         }
         let message = 'Internal server error.'
-        if (error.extensions?.code == "GRAPHQL_VALIDATION_FAILED") {
-            message = error.message
+        if (formattedError.extensions?.code == "GRAPHQL_VALIDATION_FAILED") {
+            message = formattedError.message
         }
         return {
             message: message,
             error_code: errorCode
-        }
+        } as any
     },
     plugins: [
-        responseCachePlugin(),
-        ApolloServerPluginLandingPageGraphQLPlayground()
+        responseCachePlugin()
     ]
 })
 
