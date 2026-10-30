@@ -4,6 +4,7 @@ import cors from 'cors'
 import { RegenbogenICEError } from '../errors.js'
 import { randomBytes } from 'crypto'
 import { apolloServer } from '../graphql/server.js'
+import { expressMiddleware } from '@as-integrations/express4'
 
 
 export const app = express()
@@ -15,7 +16,7 @@ if (process.env.SENTRY_DSN) {
 }
 */
 
-apolloServer.applyMiddleware({ app })
+app.use('/graphql', cors(), express.json(), expressMiddleware(apolloServer))
 app.use(express.json())
 app.use(cors())
 
